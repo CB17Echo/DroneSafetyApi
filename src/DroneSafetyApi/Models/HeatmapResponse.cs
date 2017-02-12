@@ -8,7 +8,7 @@ namespace DroneSafetyApi.Models
     public class HeatmapResponse
     {
         public int NumSources { get; set; }
-        public string[] Sources { get; set; }
+        public IEnumerable<string> Sources { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
         // Keys in HeatMaps must be exactly those in Sources
