@@ -6,7 +6,7 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Models
 {
-    public interface IHeatmapRepository
+    public interface IHazardsRepository
     {
         // Keys in the return value signify the names of each relevant data source
         // Values in the return value signify the hazards intersecting in the given area

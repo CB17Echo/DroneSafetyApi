@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Models
 {
-    public class HeatmapResponse
+    public class HeatmapsResponse
     {
         public int NumSources { get; set; }
         public IEnumerable<string> Sources { get; set; }
