@@ -7,6 +7,6 @@ namespace DroneSafetyApi.Models
 {
     public class Heatmap
     {
-        public int Values { get; set; }
+        public int[][] Values { get; set; }
     }
 }

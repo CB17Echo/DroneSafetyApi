@@ -19,7 +19,7 @@ namespace DroneSafetyApi.Services
             Dictionary<string, Heatmap> heatmaps = new Dictionary<string, Heatmap>();
             foreach (var item in hazards)
             {
-                heatmaps.Add(item.Key, ConvertToHeatmap(height, width, item.Value));
+                heatmaps.Add(item.Key, ConvertToHeatmap(height, width, area, item.Value));
             }
             return new HeatmapResponse
             {
@@ -31,7 +31,7 @@ namespace DroneSafetyApi.Services
             };
         }
 
-        public abstract Heatmap ConvertToHeatmap(int height, int width, IEnumerable<Hazard> hazards);
+        public abstract Heatmap ConvertToHeatmap(int height, int width, Polygon area, IEnumerable<Hazard> hazards);
          
     }
 }
