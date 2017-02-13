@@ -14,6 +14,14 @@ namespace DroneSafetyApi.Models
         public double CornerOneLon { get; set; }
         public double CornerTwoLat { get; set; }
         public double CornerTwoLon { get; set; }
+        public bool Bad
+        {
+            get
+            {
+                return (Height <= 0)
+                    || (Width <= 0);
+            }
+        }
         public Polygon Area
         {
             get

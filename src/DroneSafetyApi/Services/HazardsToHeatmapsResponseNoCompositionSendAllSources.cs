@@ -7,7 +7,7 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Services
 {
-    public abstract class HazardsToHeatmapsResponseStrategy
+    public abstract class HazardsToHeatmapsResponseNoCompositionSendAllSources : IHazardsToHeatmapsResponse
     {
         public HeatmapsResponse ConvertToHeatmapResponse(
             int height,
