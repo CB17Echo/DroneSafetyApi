@@ -11,11 +11,11 @@ namespace DroneSafetyApi.Controllers
     [Route("api/[controller]")]
     public class HeatmapsController : Controller
     {
-        public IHazardsRepository Hazards { get; set; }
-        public IHazardsToHeatmapsResponse HazardsToHeatmaps { get; set; }
+        public IDataPointRepository Hazards { get; set; }
+        public IDataPointsToHeatmapsResponse HazardsToHeatmaps { get; set; }
         public HeatmapsController(
-            IHazardsRepository hazards,
-            IHazardsToHeatmapsResponse hazardsToHeatmaps)
+            IDataPointRepository hazards,
+            IDataPointsToHeatmapsResponse hazardsToHeatmaps)
         {
             Hazards = hazards;
             HazardsToHeatmaps = hazardsToHeatmaps;
