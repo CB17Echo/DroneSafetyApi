@@ -7,11 +7,13 @@ using Newtonsoft.Json;
 
 namespace DroneSafetyApi.Models
 {
-    public class Hazard
+    public class DataPoint
     {
         [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-        public int Severity { get; set; }
-        public Polygon Area { get; set; }
+        public string DataType { get; set; }
+        public int Time { get; set; }
+        public Geometry Location { get; set; }
+        public int Data_ID { get; set; }
+
     }
 }

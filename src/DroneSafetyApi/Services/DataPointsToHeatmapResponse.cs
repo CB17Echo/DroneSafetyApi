@@ -7,19 +7,37 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Services
 {
-    public class HazardsToHeatmapResponse : HazardsToHeatmapsResponseNoCompositionSendAllSources
+    public class DataPointsToHeatmapResponse : DataPointsToHeatmapsResponseNoCompositionSendAllSources
     {
-        public override Heatmap ConvertToHeatmap(int height, int width, BoundingBox area, IEnumerable<Hazard> hazards)
-        {
-            // Initialise Heatmap
-            Heatmap heatmap = new Heatmap();
-            heatmap.Values = new int[width,height];
 
+
+
+        public override HeatMap ConvertToHeatmap(int decimalPlaces, BoundingBox area, IEnumerable<DataPoint> hazards)
+        {
+            // Data Points 
+            // Get Type
+            // 
+
+            // Initialise Heatmap
+            HeatMap heatmap = new HeatMap(area.Min.Latitude, area.Max.Latitude, area.Min.Longitude, area.Max.Longitude, decimalPlaces);
+            
+
+
+
+           
+
+            return heatmap;
+        }
+
+
+
+        private void ProcessPolygon(Polygon polygon, HeatMap heatmap)
+        {
             // Calculate scaling between grid and lat long coordinates
             double xScale = (area.Max.Latitude - area.Min.Latitude) / width;
             double yScale = (area.Max.Longitude - area.Min.Longitude) / height;
 
-            foreach (Hazard hazard in hazards)
+            foreach (DataPoint hazard in hazards)
             {
                 IList<Position> coord = hazard.Area.Rings[0].Positions;
 
@@ -47,20 +65,19 @@ namespace DroneSafetyApi.Services
                 int yStart = (int)((minLong - area.Min.Longitude) / yScale);
                 int yRange = (int)((maxLong - minLong) / yScale);
 
-                for(int x = 0; x < xRange; x++)
+                for (int x = 0; x < xRange; x++)
                 {
-                    for(int y = 0; y < yRange; y++)
+                    for (int y = 0; y < yRange; y++)
                     {
-                        heatmap.Values[xStart+x, height - 1 - (yStart + y)] += (inHazard(minLat + (x * xScale),
+                        heatmap.Values[xStart + x, height - 1 - (yStart + y)] += (inHazard(minLat + (x * xScale),
                             minLong + (y * yScale), hazard)) ? hazard.Severity : 0;
                     }
                 }
             }
-
-            return heatmap;
         }
 
-        public Boolean inHazard(double lat, double lon, Hazard hazard)
+
+        public Boolean inHazard(double lat, double lon, DataPoint hazard)
         {
             Boolean inside = false;
             IList<Position> coord = hazard.Area.Rings[0].Positions;
@@ -72,22 +89,6 @@ namespace DroneSafetyApi.Services
                     (coord[i-1].Longitude - coord[i].Longitude) + coord[i].Latitude)) { inside = !inside; }
             }
             return inside;
-        }
-
-
-        public override HeatmapsResponse ConvertToHeatmapResponse(int height, int width, Polygon area, Dictionary<string, IEnumerable<Hazard>> hazards)
-        {
-            HeatmapsResponse response = new HeatmapsResponse();
-            response.Height = height;
-            response.Width = width;
-            response.NumSources = hazards.Count;
-            response.Sources = hazards.Keys;
-            foreach(IEnumerable<Hazard> source in hazards.Values)
-            {
-                con
-            }
-
-            return response;
         }
 
     }

@@ -5,30 +5,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DroneSafety
+namespace DroneSafetyApi.Models
 {
 
-    class HeatMap
+    public class HeatMap
     {
         private int[,] mHeatMap;
-        private float mStartX;
-        private float mStartY;
+        private double mStartX;
+        private double mStartY;
         private int mDecimalPlaces;
-        private float mResolution;
+        private double mResolution;
 
-        public float GetResolution()
+        public double GetResolution()
         {
             return mResolution;
         }
-        public HeatMap(float minX, float maxX, float minY, float maxY, int decimalPlaces)
+        public HeatMap(double minX, double maxX, double minY, double maxY, int decimalPlaces)
         {
-            float rangeX = maxX - minX;
-            float rangeY = maxY - minY;
+            double rangeX = maxX - minX;
+            double rangeY = maxY - minY;
 
             mStartX = minX;
             mStartY = minY;
 
-            mResolution = (float)(1 / Math.Pow(10, mDecimalPlaces));
+            mResolution = (double)(1 / Math.Pow(10, mDecimalPlaces));
 
             int width = (int)(rangeX * Math.Pow(10, mDecimalPlaces));
             int height = (int)(rangeY * Math.Pow(10, mDecimalPlaces));
@@ -37,21 +37,21 @@ namespace DroneSafety
             mDecimalPlaces = decimalPlaces;
         }
 
-        private float[] indexToGPS(int x, int y)
+        private double[] indexToGPS(int x, int y)
         {
-            float lat = (float)Math.Round(mStartX + mResolution * x, mDecimalPlaces);
-            float lon = (float)Math.Round(mStartY + mResolution * y, mDecimalPlaces);
-            return new float[] { lat, lon };
+            double lat = (double)Math.Round(mStartX + mResolution * x, mDecimalPlaces);
+            double lon = (double)Math.Round(mStartY + mResolution * y, mDecimalPlaces);
+            return new double[] { lat, lon };
         }
 
-        private int[] GPSToIndex(float x, float y)
+        private int[] GPSToIndex(double x, double y)
         {
-            x = (float)Math.Round(x, mDecimalPlaces);
-            y = (float)Math.Round(x, mDecimalPlaces);
+            x = (double)Math.Round(x, mDecimalPlaces);
+            y = (double)Math.Round(x, mDecimalPlaces);
             return new int[] { (int)((x - mStartX) / mResolution), (int)((y - mStartY) / mResolution) };
         }
 
-        public void AddHazard(float x, float y, int v)
+        public void AddHazard(double x, double y, int v)
         {
             int[] index = GPSToIndex(x, y);
             mHeatMap[index[0], index[1]] += v;
@@ -63,7 +63,7 @@ namespace DroneSafety
             for (int i = 0; i < mHeatMap.GetLength(0); i++)
                 for (int j = 0; j < mHeatMap.GetLength(1); j++)
                 {
-                    float[] GPS = indexToGPS(i, j);
+                    double[] GPS = indexToGPS(i, j);
                     dynamic jsonObject = new
                     {
                         x = GPS[0],
