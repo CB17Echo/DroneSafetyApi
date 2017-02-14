@@ -11,8 +11,10 @@ namespace DroneSafetyApi.Models
     public class HeatMap
     {
         private int[,] mHeatMap;
-        private double mStartX;
-        private double mStartY;
+        public double mStartX { get; set; }
+        public double mEndX { get; set; }
+        public double mStartY { get; set; }
+        public double mEndY { get; set; }
         private int mDecimalPlaces;
         private double mResolution;
 
@@ -26,7 +28,9 @@ namespace DroneSafetyApi.Models
             double rangeY = maxY - minY;
 
             mStartX = minX;
+            mEndX = maxX;
             mStartY = minY;
+            mEndY = maxY;
 
             mResolution = (double)(1 / Math.Pow(10, mDecimalPlaces));
 
@@ -37,14 +41,14 @@ namespace DroneSafetyApi.Models
             mDecimalPlaces = decimalPlaces;
         }
 
-        private double[] indexToGPS(int x, int y)
+        public double[] indexToGPS(int x, int y)
         {
             double lat = (double)Math.Round(mStartX + mResolution * x, mDecimalPlaces);
             double lon = (double)Math.Round(mStartY + mResolution * y, mDecimalPlaces);
             return new double[] { lat, lon };
         }
 
-        private int[] GPSToIndex(double x, double y)
+        public int[] GPSToIndex(double x, double y)
         {
             x = (double)Math.Round(x, mDecimalPlaces);
             y = (double)Math.Round(x, mDecimalPlaces);

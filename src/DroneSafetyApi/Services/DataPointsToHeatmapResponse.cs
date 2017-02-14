@@ -31,56 +31,49 @@ namespace DroneSafetyApi.Services
 
 
 
-        private void ProcessPolygon(Polygon polygon, HeatMap heatmap)
+        private void ProcessPolygon(Polygon polygon, HeatMap heatmap, int severity)
         {
-            // Calculate scaling between grid and lat long coordinates
-            double xScale = (area.Max.Latitude - area.Min.Latitude) / width;
-            double yScale = (area.Max.Longitude - area.Min.Longitude) / height;
+            IList<Position> coord = polygon.Rings[0].Positions;
 
-            foreach (DataPoint hazard in hazards)
+            // Calculate bounding box of each hazard polygon
+            double minLong = coord[0].Longitude;
+            double maxLong = coord[0].Longitude;
+            double minLat = coord[0].Latitude;
+            double maxLat = coord[0].Latitude;
+            for (int i = 1; i < coord.Count - 1; i++)
             {
-                IList<Position> coord = hazard.Area.Rings[0].Positions;
+                if (coord[i].Latitude < minLat) { minLat = coord[i].Latitude; }
+                else if (coord[i].Latitude > maxLat) { maxLat = coord[i].Latitude; }
+                if (coord[i].Longitude < minLong) { minLong = coord[i].Longitude; }
+                else if (coord[i].Longitude > maxLong) { maxLong = coord[i].Longitude; }
+            }
+            if (minLat < heatmap.mStartX) { minLat = heatmap.mStartX; }
+            if (maxLat > heatmap.mEndX) { maxLat = heatmap.mEndX; }
+            if (minLong < heatmap.mStartY) { minLong = heatmap.mStartY; }
+            if (maxLong > heatmap.mEndY) { maxLong = heatmap.mEndY; }
 
-                // Calculate bounding box of each hazard polygon
-                double minLong = coord[0].Longitude;
-                double maxLong = coord[0].Longitude;
-                double minLat = coord[0].Latitude;
-                double maxLat = coord[0].Latitude;
-                for (int i = 1; i < coord.Count - 1; i++)
+
+            // Calculate grid elements to go through
+            int[] start = heatmap.GPSToIndex(minLat, minLong);
+            int[] end = heatmap.GPSToIndex(maxLat, maxLong);
+
+            for (int x = start[0]; x < end[0]; x++)
+            {
+                for (int y = start[1]; y < end[1]; y++)
                 {
-                    if (coord[i].Longitude < minLong) { minLong = coord[i].Longitude; }
-                    else if (coord[i].Longitude > maxLong) { maxLong = coord[i].Longitude; }
-                    if (coord[i].Latitude < minLat) { minLat = coord[i].Latitude; }
-                    else if (coord[i].Latitude > maxLat) { maxLat = coord[i].Latitude; }
-                }
-                if (minLong < area.Min.Longitude) { minLong = area.Min.Longitude; }
-                if (maxLong > area.Max.Longitude) { maxLong = area.Max.Longitude; }
-                if (minLat < area.Min.Latitude) { minLat = area.Min.Latitude; }
-                if (maxLat > area.Max.Latitude) { maxLat = area.Max.Latitude; }
-
-
-                // Calculate grid elements to go through
-                int xStart = (int)((minLat - area.Min.Latitude) / xScale);
-                int xRange = (int)((maxLat - minLat) / xScale);
-                int yStart = (int)((minLong - area.Min.Longitude) / yScale);
-                int yRange = (int)((maxLong - minLong) / yScale);
-
-                for (int x = 0; x < xRange; x++)
-                {
-                    for (int y = 0; y < yRange; y++)
+                    double[] point = heatmap.indexToGPS(x, y);
+                    if (inHazard(point[0], point[1], polygon))
                     {
-                        heatmap.Values[xStart + x, height - 1 - (yStart + y)] += (inHazard(minLat + (x * xScale),
-                            minLong + (y * yScale), hazard)) ? hazard.Severity : 0;
+                        heatmap.AddHazard(point[0], point[1], severity);
                     }
                 }
             }
         }
 
-
-        public Boolean inHazard(double lat, double lon, DataPoint hazard)
+        public Boolean inHazard(double lat, double lon, Polygon polygon)
         {
             Boolean inside = false;
-            IList<Position> coord = hazard.Area.Rings[0].Positions;
+            IList<Position> coord = polygon.Rings[0].Positions;
             for (int i = 1; i < coord.Count ; i++)
             {
                 if (lat == coord[i].Latitude && lon == coord[i].Longitude) return true;
