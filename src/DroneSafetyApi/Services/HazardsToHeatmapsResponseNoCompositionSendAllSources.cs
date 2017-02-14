@@ -7,9 +7,9 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Services
 {
-    public abstract class HazardsToHeatmapResponseStrategy
+    public abstract class HazardsToHeatmapsResponseNoCompositionSendAllSources : IHazardsToHeatmapsResponse
     {
-        public HeatmapResponse ConvertToHeatmapResponse(
+        public HeatmapsResponse ConvertToHeatmapResponse(
             int height,
             int width,
             BoundingBox area,
@@ -21,7 +21,7 @@ namespace DroneSafetyApi.Services
             {
                 heatmaps.Add(item.Key, ConvertToHeatmap(height, width, area, item.Value));
             }
-            return new HeatmapResponse
+            return new HeatmapsResponse
             {
                 NumSources = hazards.Count,
                 Sources = hazards.Keys,
