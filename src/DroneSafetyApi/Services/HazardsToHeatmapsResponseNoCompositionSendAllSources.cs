@@ -32,6 +32,6 @@ namespace DroneSafetyApi.Services
         }
 
         public abstract Heatmap ConvertToHeatmap(int height, int width, BoundingBox area, IEnumerable<Hazard> hazards);
-         
+        public abstract HeatmapsResponse ConvertToHeatmapResponse(int height, int width, Polygon area, Dictionary<string, IEnumerable<Hazard>> hazards);
     }
 }

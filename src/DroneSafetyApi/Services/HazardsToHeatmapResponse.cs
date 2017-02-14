@@ -7,25 +7,17 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Services
 {
-    public class HazardsToHeatmapResponse : HazardsToHeatmapResponseStrategy
+    public class HazardsToHeatmapResponse : HazardsToHeatmapsResponseNoCompositionSendAllSources
     {
         public override Heatmap ConvertToHeatmap(int height, int width, BoundingBox area, IEnumerable<Hazard> hazards)
         {
             // Initialise Heatmap
             Heatmap heatmap = new Heatmap();
-            heatmap.Values = new int[height][];
-            for(int i = 0; i < height; i++)
-            {
-                heatmap.Values[i] = new int[width];
-                for(int j = 0; j < width; j++)
-                {
-                    heatmap.Values[i][j] = 0;
-                }
-            }
+            heatmap.Values = new int[width,height];
 
             // Calculate scaling between grid and lat long coordinates
-            double xScale = (area.Max.Longitude - area.Min.Longitude) / width;
-            double yScale = (area.Max.Latitude - area.Min.Latitude) / height;
+            double xScale = (area.Max.Latitude - area.Min.Latitude) / width;
+            double yScale = (area.Max.Longitude - area.Min.Longitude) / height;
 
             foreach (Hazard hazard in hazards)
             {
@@ -50,17 +42,17 @@ namespace DroneSafetyApi.Services
 
 
                 // Calculate grid elements to go through
-                int xStart = (int)((minLong - area.Min.Longitude) / xScale);
-                int xRange = (int)((maxLong - minLong) / xScale);
-                int yStart = (int)((minLat - area.Min.Latitude) / yScale);
-                int yRange = (int)((maxLat - minLat) / yScale);
+                int xStart = (int)((minLat - area.Min.Latitude) / xScale);
+                int xRange = (int)((maxLat - minLat) / xScale);
+                int yStart = (int)((minLong - area.Min.Longitude) / yScale);
+                int yRange = (int)((maxLong - minLong) / yScale);
 
                 for(int x = 0; x < xRange; x++)
                 {
                     for(int y = 0; y < yRange; y++)
                     {
-                        heatmap.Values[height - 1 - (yStart + y)][xStart + x] += (inHazard(minLong + (x * xScale),
-                            minLat + (y * yScale), hazard)) ? hazard.Severity : 0;
+                        heatmap.Values[xStart+x, height - 1 - (yStart + y)] += (inHazard(minLat + (x * xScale),
+                            minLong + (y * yScale), hazard)) ? hazard.Severity : 0;
                     }
                 }
             }
@@ -68,19 +60,35 @@ namespace DroneSafetyApi.Services
             return heatmap;
         }
 
-        public Boolean inHazard(double lon, double lat, Hazard hazard)
+        public Boolean inHazard(double lat, double lon, Hazard hazard)
         {
             Boolean inside = false;
             IList<Position> coord = hazard.Area.Rings[0].Positions;
             for (int i = 1; i < coord.Count ; i++)
             {
-                if (lon == coord[i].Longitude && lat == coord[i].Latitude) return true;
-                if (((coord[i].Latitude > lat) != (coord[i-1].Latitude > lat)) &&
-                    (lon < (coord[i-1].Longitude - coord[i].Longitude) * (lat - coord[i].Latitude) /
-                    (coord[i-1].Latitude - coord[i].Latitude) + coord[i].Longitude)) { inside = !inside; }
+                if (lat == coord[i].Latitude && lon == coord[i].Longitude) return true;
+                if (((coord[i].Longitude > lon) != (coord[i-1].Longitude > lon)) &&
+                    (lat < (coord[i-1].Latitude - coord[i].Latitude) * (lon - coord[i].Longitude) /
+                    (coord[i-1].Longitude - coord[i].Longitude) + coord[i].Latitude)) { inside = !inside; }
             }
             return inside;
+        }
+
+
+        public override HeatmapsResponse ConvertToHeatmapResponse(int height, int width, Polygon area, Dictionary<string, IEnumerable<Hazard>> hazards)
+        {
+            HeatmapsResponse response = new HeatmapsResponse();
+            response.Height = height;
+            response.Width = width;
+            response.NumSources = hazards.Count;
+            response.Sources = hazards.Keys;
+            foreach(IEnumerable<Hazard> source in hazards.Values)
+            {
+                con
             }
+
+            return response;
+        }
 
     }
 }
