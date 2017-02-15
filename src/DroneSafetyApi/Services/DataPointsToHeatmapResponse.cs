@@ -14,21 +14,24 @@ namespace DroneSafetyApi.Services
 
         public override HeatMap ConvertToHeatmap(int decimalPlaces, BoundingBox area, IEnumerable<DataPoint> datapoints)
         {
-            // Data Points 
-            // Get Type
-            // 
-
             // Initialise Heatmap
             HeatMap heatmap = new HeatMap(area.Min.Latitude, area.Max.Latitude, area.Min.Longitude, area.Max.Longitude, decimalPlaces);
 
             foreach (DataPoint datapoint in datapoints)
             {
-                switch (datapoint.DataType)
+                switch (datapoint.Shape)
                 {
-                    case "BusData":
-
+                    case "Point":
+                        Point point = (Point)datapoint.Location;
+                        ProcessPoint(point, heatmap, datapoint.Severity);
                         break;
-                    case "WifiData":
+                    /*case "Cirlce":
+                        Point centre = (Point)datapoint.Location;
+                        ProcessCircle(centre, radius, heatmap, datapoint.Severity);
+                        break;*/
+                    case "Polygon":
+                        Polygon polygon = (Polygon)datapoint.Location;
+                        ProcessPolygon(polygon, heatmap, datapoint.Severity);
                         break;
                     default:
                         break;
@@ -36,14 +39,6 @@ namespace DroneSafetyApi.Services
             }
 
             return heatmap;
-        }
-
-
-
-        private void ProcessBusDataPoint(DataPoint datapoint, HeatMap heatmap)
-        {
-            Point p = (Point)datapoint.Location;
-            ProcessPoint(p, heatmap, 1);
         }
 
         private void ProcessPoint(Point point, HeatMap heatmap, int value)
@@ -82,7 +77,7 @@ namespace DroneSafetyApi.Services
             return metres / MetresInLatDegree;
         }
 
-        private void ProcessPolygon(Polygon polygon, HeatMap heatmap, int severity)
+        private void ProcessPolygon(Polygon polygon, HeatMap heatmap, int value)
         {
             IList<Position> coord = polygon.Rings[0].Positions;
 
@@ -115,7 +110,7 @@ namespace DroneSafetyApi.Services
                     double[] point = heatmap.indexToGPS(x, y);
                     if (inHazard(point[0], point[1], polygon))
                     {
-                        heatmap.AddHazard(point[0], point[1], severity);
+                        heatmap.AddHazard(point[0], point[1], value);
                     }
                 }
             }

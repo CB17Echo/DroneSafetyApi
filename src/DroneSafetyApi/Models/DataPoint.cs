@@ -11,6 +11,7 @@ namespace DroneSafetyApi.Models
     {
         [JsonProperty(PropertyName = "id")]
         public string DataType { get; set; }
+        public string Shape { get;  set; }
         public int Time { get; set; }
         public int Severity { get; set; }
         public Geometry Location { get; set; }
