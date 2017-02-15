@@ -10,9 +10,9 @@ namespace DroneSafetyApi.Services
     public class DataPointsToHeatmapResponse : DataPointsToHeatmapsResponseNoCompositionSendAllSources
     {
 
+        const int MetresInLatDegree = 110575;
 
-
-        public override HeatMap ConvertToHeatmap(int decimalPlaces, BoundingBox area, IEnumerable<DataPoint> hazards)
+        public override HeatMap ConvertToHeatmap(int decimalPlaces, BoundingBox area, IEnumerable<DataPoint> datapoints)
         {
             // Data Points 
             // Get Type
@@ -20,16 +20,67 @@ namespace DroneSafetyApi.Services
 
             // Initialise Heatmap
             HeatMap heatmap = new HeatMap(area.Min.Latitude, area.Max.Latitude, area.Min.Longitude, area.Max.Longitude, decimalPlaces);
-            
 
+            foreach (DataPoint datapoint in datapoints)
+            {
+                switch (datapoint.DataType)
+                {
+                    case "BusData":
 
-
-           
+                        break;
+                    case "WifiData":
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             return heatmap;
         }
 
 
+
+        private void ProcessBusDataPoint(DataPoint datapoint, HeatMap heatmap)
+        {
+            Point p = (Point)datapoint.Location;
+            ProcessPoint(p, heatmap, 1);
+        }
+
+        private void ProcessPoint(Point point, HeatMap heatmap, int value)
+        {
+            heatmap.AddHazard(point.Position.Latitude, point.Position.Latitude, value);
+        }
+
+        private void ProcessCircle(Point centre, int radius, HeatMap heatmap, int value)
+        {
+            double lat = centre.Position.Latitude;
+            double lon = centre.Position.Longitude;
+
+            double resolutionDeg = heatmap.GetResolution();
+            double radiusDeg = MetresToDegrees(radius);
+
+            int radiusSteps = (int)(radiusDeg / resolutionDeg);
+
+            for (int x = 0; x < radiusSteps; x++)
+                for (int y = 0; y < radiusSteps; y++)
+                {
+                    if (x * x + y * y <= radiusSteps * radiusSteps)
+                    {
+                        double deltaLat = x * resolutionDeg;
+                        double deltaLon = y * resolutionDeg;
+
+                        heatmap.AddHazard(lat - deltaLat, lon - deltaLon, value);
+                        heatmap.AddHazard(lat - deltaLat, lon + deltaLon, value);
+                        heatmap.AddHazard(lat + deltaLat, lon - deltaLon, value);
+                        heatmap.AddHazard(lat + deltaLat, lon + deltaLon, value);
+                    }
+                }
+        }
+
+        private double MetresToDegrees(double metres)
+        {
+            return metres / MetresInLatDegree;
+        }
 
         private void ProcessPolygon(Polygon polygon, HeatMap heatmap, int severity)
         {

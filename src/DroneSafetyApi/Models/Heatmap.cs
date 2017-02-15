@@ -61,6 +61,25 @@ namespace DroneSafetyApi.Models
             mHeatMap[index[0], index[1]] += v;
         }
 
+        public IEnumerable<HeatMapPoint> GetHeatMapPoints()
+        {
+            List<HeatMapPoint> list = new List<HeatMapPoint>();
+            for (int i = 0; i < mHeatMap.GetLength(0); i++)
+                for (int j = 0; j < mHeatMap.GetLength(1); j++)
+                {
+                    if (mHeatMap[i, j] > 0)
+                    {
+                        double[] GPS = indexToGPS(i, j);
+                        HeatMapPoint point = new HeatMapPoint();
+                        point.x = GPS[0];
+                        point.y = GPS[1];
+                        point.value = mHeatMap[i, j];
+                        list.Add(point);
+                    }
+                }
+            return list;
+        }
+
         public string GetJsonConversion()
         {
             var list = new List<dynamic>();

@@ -28,11 +28,11 @@ namespace DroneSafetyApi.Services
                 list.Add(datapoint);
             }
 
-            Dictionary<String, HeatMap> heatmaps = new Dictionary<string, HeatMap>();
+            Dictionary<String, IEnumerable<HeatMapPoint>> heatmaps = new Dictionary<string, IEnumerable<HeatMapPoint>>();
 
-            foreach(KeyValuePair<string, List<DataPoint>> pair in datapointdictionary)
+            foreach (KeyValuePair<string, List<DataPoint>> pair in datapointdictionary)
             {
-                heatmaps.Add(pair.Key, ConvertToHeatmap(decimalPlaces, area, pair.Value));
+                heatmaps.Add(pair.Key, ConvertToHeatmap(decimalPlaces, area, pair.Value).GetHeatMapPoints());
             }
 
             return new HeatmapsResponse

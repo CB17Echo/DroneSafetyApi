@@ -11,6 +11,6 @@ namespace DroneSafetyApi.Models
         public IEnumerable<string> Sources { get; set; }
         // Keys in HeatMaps must be exactly those in Sources
         // Values in HeatMaps must be int[Height][Width]
-        public Dictionary<string, HeatMap> Heatmaps { get; set; }
+        public Dictionary<string, IEnumerable<HeatMapPoint>> Heatmaps { get; set; }
     }
 }

@@ -11,14 +11,14 @@ namespace DroneSafetyApi.Controllers
     [Route("api/[controller]")]
     public class HeatmapsController : Controller
     {
-        public IDataPointRepository Hazards { get; set; }
-        public IDataPointsToHeatmapsResponse HazardsToHeatmaps { get; set; }
+        public IDataPointRepository DataPoints { get; set; }
+        public IDataPointsToHeatmapsResponse DataPointsToHeatmaps { get; set; }
         public HeatmapsController(
             IDataPointRepository hazards,
             IDataPointsToHeatmapsResponse hazardsToHeatmaps)
         {
-            Hazards = hazards;
-            HazardsToHeatmaps = hazardsToHeatmaps;
+            DataPoints = hazards;
+            DataPointsToHeatmaps = hazardsToHeatmaps;
         }
 
         [HttpGet]
@@ -28,8 +28,8 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-            var intersectionHazards = Hazards.GetHazardsOverlappingWith(query.Area);
-            var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
+            var intersectionHazards = DataPoints.GetHazardsOverlappingWith(query.Area);
+            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
                 query.Height,
                 query.Width,
                 query.Area,
