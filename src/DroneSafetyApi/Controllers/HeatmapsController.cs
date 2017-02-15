@@ -28,10 +28,13 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-            var intersectionHazards = DataPoints.GetHazardsOverlappingWith(query.Area);
-            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
-                query.Height,
-                query.Width,
+
+            double x = (query.Area.Max.Latitude - query.Area.Min.Latitude) / 2;
+            double y = (query.Area.Max.Longitude - query.Area.Min.Longitude) / 2;
+            int radius = 1000;
+
+            var intersectionHazards = DataPoints.GetDataPointsInRadius(x, y, radius);
+            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(4,
                 query.Area,
                 intersectionHazards);
             return new ObjectResult(heatmapsResponse);
