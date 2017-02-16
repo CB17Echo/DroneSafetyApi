@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Services
 {
-    public interface IHazardsToHeatmapsResponse
+    public interface IDataPointsToHeatmapsResponse
     {
         HeatmapsResponse ConvertToHeatmapResponse(
-            int height,
-            int width,
-            Polygon area,
-            Dictionary<string, IEnumerable<Hazard>> hazards);
+            int decimalPlaces,
+            BoundingBox area,
+            IEnumerable<DataPoint> datapoints);
     }
 }

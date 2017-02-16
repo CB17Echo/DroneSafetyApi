@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using DroneSafetyApi.Models;
+using DroneSafetyApi.Services;
 
 namespace DroneSafetyApi
 {
@@ -38,6 +40,9 @@ namespace DroneSafetyApi
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
+
+            services.AddSingleton<IDataPointRepository, ExamplesDataRespository>();
+            services.AddSingleton<IDataPointsToHeatmapsResponse, DataPointsToHeatmapResponse>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

@@ -8,8 +8,7 @@ namespace DroneSafetyApi.Models
 {
     public class HeatmapsQuery
     {
-        public int Height { get; set; }
-        public int Width { get; set; }
+        public int DecimalPlaceAccuracy { get; set; }
         public double CornerOneLat { get; set; }
         public double CornerOneLon { get; set; }
         public double CornerTwoLat { get; set; }
@@ -18,22 +17,14 @@ namespace DroneSafetyApi.Models
         {
             get
             {
-                return (Height <= 0)
-                    || (Width <= 0);
+                return (DecimalPlaceAccuracy < 0);
             }
         }
-        public Polygon Area
+        public BoundingBox Area
         {
             get
             {
-                return new Polygon(
-                    new[]
-                    {
-                         new Position(CornerOneLat, CornerOneLon),
-                         new Position(CornerOneLat, CornerTwoLon),
-                         new Position(CornerTwoLat, CornerTwoLat),
-                         new Position(CornerTwoLat, CornerOneLon)
-                    });
+                return new BoundingBox(new Position(CornerOneLon, CornerOneLat), new Position(CornerTwoLon, CornerTwoLat));
             }
         }
     }

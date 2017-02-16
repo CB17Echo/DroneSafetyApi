@@ -11,14 +11,14 @@ namespace DroneSafetyApi.Controllers
     [Route("api/[controller]")]
     public class HeatmapsController : Controller
     {
-        public IHazardsRepository Hazards { get; set; }
-        public IHazardsToHeatmapsResponse HazardsToHeatmaps { get; set; }
+        public IDataPointRepository DataPoints { get; set; }
+        public IDataPointsToHeatmapsResponse DataPointsToHeatmaps { get; set; }
         public HeatmapsController(
-            IHazardsRepository hazards,
-            IHazardsToHeatmapsResponse hazardsToHeatmaps)
+            IDataPointRepository hazards,
+            IDataPointsToHeatmapsResponse hazardsToHeatmaps)
         {
-            Hazards = hazards;
-            HazardsToHeatmaps = hazardsToHeatmaps;
+            DataPoints = hazards;
+            DataPointsToHeatmaps = hazardsToHeatmaps;
         }
 
         [HttpGet]
@@ -28,10 +28,14 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-            var intersectionHazards = Hazards.GetHazardsOverlappingWith(query.Area);
-            var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
-                query.Height,
-                query.Width,
+
+            double x = query.Area.Min.Latitude + (query.Area.Max.Latitude - query.Area.Min.Latitude) / 2;
+            double y = query.Area.Min.Longitude + (query.Area.Max.Longitude - query.Area.Min.Longitude) / 2;
+
+            int radius =100000;
+
+            var intersectionHazards = DataPoints.GetDataPointsInRadius(x, y, radius);
+            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(4,
                 query.Area,
                 intersectionHazards);
             return new ObjectResult(heatmapsResponse);
