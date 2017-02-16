@@ -29,9 +29,10 @@ namespace DroneSafetyApi.Controllers
                 return new BadRequestResult();
             }
 
-            double x = (query.Area.Max.Latitude - query.Area.Min.Latitude) / 2;
-            double y = (query.Area.Max.Longitude - query.Area.Min.Longitude) / 2;
-            int radius = 1000;
+            double x = query.Area.Min.Latitude + (query.Area.Max.Latitude - query.Area.Min.Latitude) / 2;
+            double y = query.Area.Min.Longitude + (query.Area.Max.Longitude - query.Area.Min.Longitude) / 2;
+
+            int radius =100000;
 
             var intersectionHazards = DataPoints.GetDataPointsInRadius(x, y, radius);
             var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(4,

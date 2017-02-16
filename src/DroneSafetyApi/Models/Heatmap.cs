@@ -31,14 +31,14 @@ namespace DroneSafetyApi.Models
             mEndX = maxX;
             mStartY = minY;
             mEndY = maxY;
-
+            mDecimalPlaces = decimalPlaces;
             mResolution = (double)(1 / Math.Pow(10, mDecimalPlaces));
 
             int width = (int)(rangeX * Math.Pow(10, mDecimalPlaces));
             int height = (int)(rangeY * Math.Pow(10, mDecimalPlaces));
 
             mHeatMap = new int[width, height];
-            mDecimalPlaces = decimalPlaces;
+            
         }
 
         public double[] indexToGPS(int x, int y)
@@ -51,13 +51,15 @@ namespace DroneSafetyApi.Models
         public int[] GPSToIndex(double x, double y)
         {
             x = (double)Math.Round(x, mDecimalPlaces);
-            y = (double)Math.Round(x, mDecimalPlaces);
+            y = (double)Math.Round(y, mDecimalPlaces);
             return new int[] { (int)((x - mStartX) / mResolution), (int)((y - mStartY) / mResolution) };
         }
 
         public void AddHazard(double x, double y, int v)
         {
             int[] index = GPSToIndex(x, y);
+            if (index[0] < 0 || index[1] < 0 || index[0] >= mHeatMap.GetLength(0) || index[1] >= mHeatMap.GetLength(1))
+                return;
             mHeatMap[index[0], index[1]] += v;
         }
 

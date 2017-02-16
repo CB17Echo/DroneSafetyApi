@@ -43,7 +43,7 @@ namespace DroneSafetyApi.Services
 
         private void ProcessPoint(Point point, HeatMap heatmap, int value)
         {
-            heatmap.AddHazard(point.Position.Latitude, point.Position.Latitude, value);
+            heatmap.AddHazard(point.Position.Latitude, point.Position.Longitude, value);
         }
 
         private void ProcessCircle(Point centre, int radius, HeatMap heatmap, int value)
