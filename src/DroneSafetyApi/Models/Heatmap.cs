@@ -73,8 +73,8 @@ namespace DroneSafetyApi.Models
                     {
                         double[] GPS = indexToGPS(i, j);
                         HeatMapPoint point = new HeatMapPoint();
-                        point.x = GPS[0];
-                        point.y = GPS[1];
+                        point.y = GPS[0];
+                        point.x = GPS[1];
                         point.value = mHeatMap[i, j];
                         list.Add(point);
                     }
