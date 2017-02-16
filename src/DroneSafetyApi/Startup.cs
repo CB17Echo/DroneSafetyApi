@@ -39,6 +39,15 @@ namespace DroneSafetyApi
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+
             services.AddMvc();
 
             services.AddSingleton<IDataPointRepository, ExamplesDataRespository>();
@@ -54,6 +63,8 @@ namespace DroneSafetyApi
             app.UseApplicationInsightsRequestTelemetry();
 
             app.UseApplicationInsightsExceptionTelemetry();
+
+            app.UseCors("CorsPolicy");
 
             app.UseMvc();
         }
