@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DroneSafetyApi.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 // TODO: Change namespace
-namespace DroneSafetyApi.Models
+namespace DroneSafetyApi.Services
 {
 
     public class HeatMap
@@ -64,7 +65,7 @@ namespace DroneSafetyApi.Models
             mHeatMap[index[0], index[1]] += v;
         }
 
-        public IEnumerable<HeatmapPoint> GetHeatMapPoints()
+        public IEnumerable<Models.HeatmapPoint> GetHeatMapPoints()
         {
             List<HeatmapPoint> list = new List<HeatmapPoint>();
             for (int i = 0; i < mHeatMap.GetLength(0); i++)

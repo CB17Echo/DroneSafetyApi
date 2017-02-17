@@ -1,10 +1,11 @@
-﻿using Microsoft.Azure.Documents.Spatial;
+﻿using DroneSafetyApi.Models;
+using Microsoft.Azure.Documents.Spatial;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DroneSafetyApi.Models
+namespace DroneSafetyApi.Data
 {
     public class ExamplesDataRespository : IDataPointRepository
     {

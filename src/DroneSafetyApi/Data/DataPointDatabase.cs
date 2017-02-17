@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Documents;
+﻿using DroneSafetyApi.Models;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Spatial;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DroneSafetyApi.Models
+namespace DroneSafetyApi.Data
 {
     public class DataPointDatabase : IDataPointRepository
     {
@@ -37,4 +38,3 @@ namespace DroneSafetyApi.Models
         }
     }
 }
-
