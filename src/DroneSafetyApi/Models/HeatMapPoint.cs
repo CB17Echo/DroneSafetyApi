@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Models
 {
-    public class HeatMapPoint
+    public class HeatmapPoint
     {
-        public double x { get; set; }
-        public double y { get; set; }
-
-        public int value { get; set; }
-
+        public double X { get; set; }
+        public double Y { get; set; }
+        public int Value { get; set; }
     }
 }

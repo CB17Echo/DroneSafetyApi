@@ -30,16 +30,13 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-
-            double x = query.Area.Min.Latitude + (query.Area.Max.Latitude - query.Area.Min.Latitude) / 2;
-            double y = query.Area.Min.Longitude + (query.Area.Max.Longitude - query.Area.Min.Longitude) / 2;
-
-            int radius =100000;
-
-            var intersectionHazards = DataPoints.GetDataPointsInRadius(x, y, radius);
-            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(4,
+            // TODO: Decide optimal radius value, and put value/computation in appropriate place.
+            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, 100000);
+            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
+                query.DecimalPlaceAccuracy,
                 query.Area,
-                intersectionHazards);
+                intersectionHazards
+                );
             return new ObjectResult(heatmapsResponse);
         }
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// TODO: Change namespace
 namespace DroneSafetyApi.Models
 {
 
@@ -63,44 +64,23 @@ namespace DroneSafetyApi.Models
             mHeatMap[index[0], index[1]] += v;
         }
 
-        public IEnumerable<HeatMapPoint> GetHeatMapPoints()
+        public IEnumerable<HeatmapPoint> GetHeatMapPoints()
         {
-            List<HeatMapPoint> list = new List<HeatMapPoint>();
+            List<HeatmapPoint> list = new List<HeatmapPoint>();
             for (int i = 0; i < mHeatMap.GetLength(0); i++)
                 for (int j = 0; j < mHeatMap.GetLength(1); j++)
                 {
                     if (mHeatMap[i, j] > 0)
                     {
                         double[] GPS = indexToGPS(i, j);
-                        HeatMapPoint point = new HeatMapPoint();
-                        point.y = GPS[0];
-                        point.x = GPS[1];
-                        point.value = mHeatMap[i, j];
+                        HeatmapPoint point = new HeatmapPoint();
+                        point.Y = GPS[0];
+                        point.X = GPS[1];
+                        point.Value = mHeatMap[i, j];
                         list.Add(point);
                     }
                 }
             return list;
         }
-
-        public string GetJsonConversion()
-        {
-            var list = new List<dynamic>();
-            for (int i = 0; i < mHeatMap.GetLength(0); i++)
-                for (int j = 0; j < mHeatMap.GetLength(1); j++)
-                {
-                    double[] GPS = indexToGPS(i, j);
-                    dynamic jsonObject = new
-                    {
-                        x = GPS[0],
-                        y = GPS[1],
-                        value = mHeatMap[i, j]
-                    };
-                    list.Add(jsonObject);
-                }
-            return JsonConvert.SerializeObject(list);
-        }
-
-
-
     }
 }
