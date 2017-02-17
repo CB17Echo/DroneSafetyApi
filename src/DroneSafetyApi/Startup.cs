@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using DroneSafetyApi.Models;
 using DroneSafetyApi.Services;
+using DroneSafetyApi.Data;
 
 namespace DroneSafetyApi
 {
