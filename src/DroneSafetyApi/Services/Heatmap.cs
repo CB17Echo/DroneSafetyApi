@@ -65,7 +65,7 @@ namespace DroneSafetyApi.Services
             mHeatMap[index[0], index[1]] += v;
         }
 
-        public IEnumerable<Models.HeatmapPoint> GetHeatMapPoints()
+        public IEnumerable<HeatmapPoint> GetHeatMapPoints()
         {
             List<HeatmapPoint> list = new List<HeatmapPoint>();
             for (int i = 0; i < mHeatMap.GetLength(0); i++)
