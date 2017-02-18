@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents.Spatial;
-using Newtonsoft.Json;
+﻿using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Models
 {
