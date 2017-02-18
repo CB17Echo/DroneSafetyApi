@@ -12,10 +12,10 @@ namespace DroneSafetyApi.Services
 
         const int MetresInLatDegree = 110575;
 
-        public override HeatMap ConvertToHeatmap(int decimalPlaces, BoundingBox area, IEnumerable<DataPoint> datapoints)
+        public override HeatMap ConvertToHeatmap(int width, int height, BoundingBox area, IEnumerable<DataPoint> datapoints)
         {
             // Initialise Heatmap
-            HeatMap heatmap = new HeatMap(area.Min.Latitude, area.Max.Latitude, area.Min.Longitude, area.Max.Longitude, decimalPlaces);
+            HeatMap heatmap = new HeatMap(area.Min.Longitude, area.Max.Longitude, area.Min.Latitude, area.Max.Latitude, width, height);
 
             foreach (DataPoint datapoint in datapoints)
             {
@@ -43,13 +43,13 @@ namespace DroneSafetyApi.Services
 
         private void ProcessPoint(Point point, HeatMap heatmap, int value)
         {
-            heatmap.AddHazard(point.Position.Latitude, point.Position.Longitude, value);
+            Position pos = heatmap.GetNearestPosition(point.Position);
+            heatmap.AddHazard(pos.Longitude, pos.Latitude, value);
         }
 
-        private void ProcessCircle(Point centre, int radius, HeatMap heatmap, int value)
+        private void ProcessCircle(Point circleCentre, int radius, HeatMap heatmap, int value)
         {
-            double lat = centre.Position.Latitude;
-            double lon = centre.Position.Longitude;
+            Position center = heatmap.GetNearestPosition(circleCentre.Position);
 
             double resolutionDeg = heatmap.GetResolution();
             double radiusDeg = MetresToDegrees(radius);
@@ -61,13 +61,13 @@ namespace DroneSafetyApi.Services
                 {
                     if (x * x + y * y <= radiusSteps * radiusSteps)
                     {
-                        double deltaLat = x * resolutionDeg;
-                        double deltaLon = y * resolutionDeg;
+                        double deltaLon = x * resolutionDeg;
+                        double deltaLat = y * resolutionDeg;
 
-                        heatmap.AddHazard(lat - deltaLat, lon - deltaLon, value);
-                        heatmap.AddHazard(lat - deltaLat, lon + deltaLon, value);
-                        heatmap.AddHazard(lat + deltaLat, lon - deltaLon, value);
-                        heatmap.AddHazard(lat + deltaLat, lon + deltaLon, value);
+                        heatmap.AddHazard(lon - deltaLon, lat - deltaLat, value);
+                        heatmap.AddHazard(lon - deltaLon, lat + deltaLat, value);
+                        heatmap.AddHazard(lon + deltaLon, lat - deltaLat, value);
+                        heatmap.AddHazard(lon + deltaLon, lat + deltaLat, value);
                     }
                 }
         }
@@ -93,39 +93,39 @@ namespace DroneSafetyApi.Services
                 if (coord[i].Longitude < minLong) { minLong = coord[i].Longitude; }
                 else if (coord[i].Longitude > maxLong) { maxLong = coord[i].Longitude; }
             }
-            if (minLat < heatmap.mStartX) { minLat = heatmap.mStartX; }
-            if (maxLat > heatmap.mEndX) { maxLat = heatmap.mEndX; }
-            if (minLong < heatmap.mStartY) { minLong = heatmap.mStartY; }
-            if (maxLong > heatmap.mEndY) { maxLong = heatmap.mEndY; }
+            if (minLong < heatmap.StartX) { minLong = heatmap.StartX; }
+            if (maxLong > heatmap.EndX) { maxLong = heatmap.EndX; }
+            if (minLat < heatmap.StartY) { minLat = heatmap.StartY; }
+            if (maxLat > heatmap.EndY) { maxLat = heatmap.EndY; }
+            
 
 
             // Calculate grid elements to go through
-            int[] start = heatmap.GPSToIndex(minLat, minLong);
-            int[] end = heatmap.GPSToIndex(maxLat, maxLong);
+            Position start = heatmap.GetNearestPosition(new Position(minLong, minLat));
+            Position end = heatmap.GetNearestPosition(new Position(maxLong, maxLat));
 
-            for (int x = start[0]; x < end[0]; x++)
+            for (double x = start.Longitude; x < end.Longitude; x += heatmap.DeltaX)
             {
-                for (int y = start[1]; y < end[1]; y++)
+                for (double y = start.Latitude; y < end.Latitude; y += heatmap.DeltaY)
                 {
-                    double[] point = heatmap.indexToGPS(x, y);
-                    if (inHazard(point[0], point[1], polygon))
+                    if (inHazard(x, y, polygon))
                     {
-                        heatmap.AddHazard(point[0], point[1], value);
+                        heatmap.AddHazard(x, y, value);
                     }
                 }
             }
         }
 
-        public Boolean inHazard(double lat, double lon, Polygon polygon)
+        public Boolean inHazard(double lon, double lat, Polygon polygon)
         {
             Boolean inside = false;
             IList<Position> coord = polygon.Rings[0].Positions;
             for (int i = 1; i < coord.Count ; i++)
             {
-                if (lat == coord[i].Latitude && lon == coord[i].Longitude) return true;
-                if (((coord[i].Longitude > lon) != (coord[i-1].Longitude > lon)) &&
-                    (lat < (coord[i-1].Latitude - coord[i].Latitude) * (lon - coord[i].Longitude) /
-                    (coord[i-1].Longitude - coord[i].Longitude) + coord[i].Latitude)) { inside = !inside; }
+                if (lon == coord[i].Longitude && lat == coord[i].Latitude) return true;
+                if (((coord[i].Latitude > lat) != (coord[i-1].Latitude > lat)) &&
+                    (lon < (coord[i-1].Longitude - coord[i].Longitude) * (lat - coord[i].Latitude) /
+                    (coord[i-1].Latitude - coord[i].Latitude) + coord[i].Longitude)) { inside = !inside; }
             }
             return inside;
         }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents.Spatial;
 
 // TODO: Change namespace
 namespace DroneSafetyApi.Services
@@ -12,76 +13,63 @@ namespace DroneSafetyApi.Services
 
     public class HeatMap
     {
-        private int[,] mHeatMap;
-        public double mStartX { get; set; }
-        public double mEndX { get; set; }
-        public double mStartY { get; set; }
-        public double mEndY { get; set; }
-        private int mDecimalPlaces;
-        private double mResolution;
+        private Dictionary<Position, int> Map;
+        public double StartX { get; set; }
+        public double EndX { get; set; }
+        public double StartY { get; set; }
+        public double EndY { get; set; }
+        public double DeltaX { get; set; }
+        public double DeltaY { get; set; }
 
-        public double GetResolution()
+        public HeatMap(double minX, double maxX, double minY, double maxY, int width, int height)
         {
-            return mResolution;
-        }
-        public HeatMap(double minX, double maxX, double minY, double maxY, int decimalPlaces)
-        {
-            double rangeX = maxX - minX;
-            double rangeY = maxY - minY;
+            StartX = minX;
+            EndX = maxX;
+            StartY = minY;
+            EndY = maxY;
 
-            mStartX = minX;
-            mEndX = maxX;
-            mStartY = minY;
-            mEndY = maxY;
-            mDecimalPlaces = decimalPlaces;
-            mResolution = (double)(1 / Math.Pow(10, mDecimalPlaces));
+            DeltaX = (maxX - minX) / width;
+            DeltaY = (maxY- minY) / height;
 
-            int width = (int)(rangeX * Math.Pow(10, mDecimalPlaces));
-            int height = (int)(rangeY * Math.Pow(10, mDecimalPlaces));
-
-            mHeatMap = new int[width, height];
+            Map = new Dictionary<Position, int>();
             
-        }
-
-        public double[] indexToGPS(int x, int y)
-        {
-            double lat = (double)Math.Round(mStartX + mResolution * x, mDecimalPlaces);
-            double lon = (double)Math.Round(mStartY + mResolution * y, mDecimalPlaces);
-            return new double[] { lat, lon };
-        }
-
-        public int[] GPSToIndex(double x, double y)
-        {
-            x = (double)Math.Round(x, mDecimalPlaces);
-            y = (double)Math.Round(y, mDecimalPlaces);
-            return new int[] { (int)((x - mStartX) / mResolution), (int)((y - mStartY) / mResolution) };
         }
 
         public void AddHazard(double x, double y, int v)
         {
-            int[] index = GPSToIndex(x, y);
-            if (index[0] < 0 || index[1] < 0 || index[0] >= mHeatMap.GetLength(0) || index[1] >= mHeatMap.GetLength(1))
-                return;
-            mHeatMap[index[0], index[1]] += v;
+            Position pos = new Position(x, y);
+            if (Map.ContainsKey(pos))
+            {
+                Map[pos] += v;
+            } else
+            {
+                Map.Add(pos, v);
+            }
         }
 
         public IEnumerable<HeatmapPoint> GetHeatMapPoints()
         {
             List<HeatmapPoint> list = new List<HeatmapPoint>();
-            for (int i = 0; i < mHeatMap.GetLength(0); i++)
-                for (int j = 0; j < mHeatMap.GetLength(1); j++)
+            foreach(KeyValuePair<Position,int> pair in Map)
+            {
+                HeatmapPoint point = new HeatmapPoint()
                 {
-                    if (mHeatMap[i, j] > 0)
-                    {
-                        double[] GPS = indexToGPS(i, j);
-                        HeatmapPoint point = new HeatmapPoint();
-                        point.Y = GPS[0];
-                        point.X = GPS[1];
-                        point.Value = mHeatMap[i, j];
-                        list.Add(point);
-                    }
-                }
+                    X = pair.Key.Longitude,
+                    Y = pair.Key.Latitude,
+                    Value = pair.Value
+                };
+                list.Add(point);
+            }
             return list;
+        }
+
+        public Position GetNearestPosition(Position pos)
+        {
+            int aX = (int)((pos.Longitude - StartX) / DeltaX);
+            double x = StartX + DeltaX * aX;
+            int aY = (int)((pos.Latitude - StartY) / DeltaY);
+            double y = StartY + DeltaY * aY;
+            return new Position (x, y);
         }
     }
 }
