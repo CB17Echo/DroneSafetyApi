@@ -48,8 +48,10 @@ namespace DroneSafetyApi.Services
         private void ProcessCircle(Point circleCentre, int radius, HeatMap heatmap, int value)
         {
             Position center = heatmap.GetNearestPosition(circleCentre.Position);
+            double lon = center.Longitude;
+            double lat = center.Latitude;
 
-            double resolutionDeg = heatmap.GetResolution();
+            double resolutionDeg = heatmap.DeltaX;
             double radiusDeg = MetresToDegrees(radius);
 
             int radiusSteps = (int)(radiusDeg / resolutionDeg);
