@@ -9,21 +9,19 @@ namespace DroneSafetyApi.Services
     {
         private Dictionary<Position, int> Map;
         public double StartX { get; set; }
-        public double EndX { get; set; }
         public double StartY { get; set; }
+        public double EndX { get; set; }
         public double EndY { get; set; }
-        public double DeltaX { get; set; }
-        public double DeltaY { get; set; }
+        public double Delta { get; set; }
 
-        public HeatMap(double minX, double maxX, double minY, double maxY, int width, int height)
+        public HeatMap(double minX, double maxX, double minY, double maxY, double resolution)
         {
             StartX = minX;
-            EndX = maxX;
             StartY = minY;
+            EndX = maxX;
             EndY = maxY;
 
-            DeltaX = (maxX - minX) / width;
-            DeltaY = (maxY- minY) / height;
+            Delta = resolution;
 
             Map = new Dictionary<Position, int>();
             
@@ -59,10 +57,10 @@ namespace DroneSafetyApi.Services
 
         public Position GetNearestPosition(Position pos)
         {
-            int aX = (int)((pos.Longitude - StartX) / DeltaX);
-            double x = StartX + DeltaX * aX;
-            int aY = (int)((pos.Latitude - StartY) / DeltaY);
-            double y = StartY + DeltaY * aY;
+            int aX = (int)((pos.Longitude - StartX) / Delta);
+            int aY = (int)((pos.Latitude - StartY) / Delta);
+            double x = StartX + Delta * aX;
+            double y = StartY + Delta * aY;
             return new Position (x, y);
         }
     }

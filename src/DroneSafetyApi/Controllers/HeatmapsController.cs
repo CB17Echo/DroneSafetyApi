@@ -30,8 +30,7 @@ namespace DroneSafetyApi.Controllers
             // TODO: Decide optimal radius value, and put value/computation in appropriate place.
             var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, 100000);
             var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
-                query.Width,
-                query.Height,
+                query.Resolution,
                 query.Area,
                 intersectionHazards
                 );

@@ -10,10 +10,10 @@ namespace DroneSafetyApi.Services
 
         const int MetresInLatDegree = 110575;
 
-        public override HeatMap ConvertToHeatmap(int width, int height, BoundingBox area, IEnumerable<DataPoint> datapoints)
+        public override HeatMap ConvertToHeatmap(double resolution, BoundingBox area, IEnumerable<DataPoint> datapoints)
         {
             // Initialise Heatmap
-            HeatMap heatmap = new HeatMap(area.Min.Longitude, area.Max.Longitude, area.Min.Latitude, area.Max.Latitude, width, height);
+            HeatMap heatmap = new HeatMap(area.Min.Longitude, area.Max.Longitude, area.Min.Latitude, area.Max.Latitude, resolution);
 
             foreach (DataPoint datapoint in datapoints)
             {
@@ -23,10 +23,11 @@ namespace DroneSafetyApi.Services
                         Point point = (Point)datapoint.Location;
                         ProcessPoint(point, heatmap, datapoint.Severity);
                         break;
-                    /*case "Cirlce":
+                    case "Cirlce":
                         Point centre = (Point)datapoint.Location;
-                        ProcessCircle(centre, radius, heatmap, datapoint.Severity);
-                        break;*/
+                        CircleDataPoint circle = (CircleDataPoint)datapoint;
+                        ProcessCircle(centre, circle.Radius, heatmap, datapoint.Severity);
+                        break;
                     case "Polygon":
                         Polygon polygon = (Polygon)datapoint.Location;
                         ProcessPolygon(polygon, heatmap, datapoint.Severity);
@@ -51,7 +52,7 @@ namespace DroneSafetyApi.Services
             double lon = center.Longitude;
             double lat = center.Latitude;
 
-            double resolutionDeg = heatmap.DeltaX;
+            double resolutionDeg = heatmap.Delta;
             double radiusDeg = MetresToDegrees(radius);
 
             int radiusSteps = (int)(radiusDeg / resolutionDeg);
@@ -104,9 +105,9 @@ namespace DroneSafetyApi.Services
             Position start = heatmap.GetNearestPosition(new Position(minLong, minLat));
             Position end = heatmap.GetNearestPosition(new Position(maxLong, maxLat));
 
-            for (double x = start.Longitude; x < end.Longitude; x += heatmap.DeltaX)
+            for (double x = start.Longitude; x < end.Longitude; x += heatmap.Delta)
             {
-                for (double y = start.Latitude; y < end.Latitude; y += heatmap.DeltaY)
+                for (double y = start.Latitude; y < end.Latitude; y += heatmap.Delta)
                 {
                     if (inHazard(x, y, polygon))
                     {
