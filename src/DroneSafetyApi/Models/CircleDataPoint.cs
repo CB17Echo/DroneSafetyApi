@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Models
 {
-    public class Heatmap
+    public class CircleDataPoint : DataPoint
     {
-        public int[][] Values { get; set; }
+        public int Radius { get; set; }
     }
 }
