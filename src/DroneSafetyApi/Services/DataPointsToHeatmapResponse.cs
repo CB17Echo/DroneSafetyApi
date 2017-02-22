@@ -23,7 +23,7 @@ namespace DroneSafetyApi.Services
                         Point point = (Point)datapoint.Location;
                         ProcessPoint(point, heatmap, datapoint.Severity);
                         break;
-                    case "Cirlce":
+                    case "Circle":
                         Point centre = (Point)datapoint.Location;
                         CircleDataPoint circle = (CircleDataPoint)datapoint;
                         ProcessCircle(centre, circle.Radius, heatmap, datapoint.Severity);
@@ -109,7 +109,7 @@ namespace DroneSafetyApi.Services
             {
                 for (double y = start.Latitude; y < end.Latitude; y += heatmap.Delta)
                 {
-                    if (inHazard(x, y, polygon))
+                    if (InHazard(x, y, polygon))
                     {
                         heatmap.AddHazard(x, y, value);
                     }
@@ -117,9 +117,9 @@ namespace DroneSafetyApi.Services
             }
         }
 
-        public Boolean inHazard(double lon, double lat, Polygon polygon)
+        private bool InHazard(double lon, double lat, Polygon polygon)
         {
-            Boolean inside = false;
+            bool inside = false;
             IList<Position> coord = polygon.Rings[0].Positions;
             for (int i = 1; i < coord.Count ; i++)
             {
