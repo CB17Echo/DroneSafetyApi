@@ -50,7 +50,7 @@ namespace DroneSafetyApi
 
             services.AddMvc();
 
-            services.AddSingleton<IDataPointRepository, ExamplesDataRespository>();
+            services.AddSingleton<IDataPointRepository, DataPointDatabase>();
             services.AddSingleton<IDataPointsToHeatmapsResponse, DataPointsToHeatmapResponse>();
         }
 
