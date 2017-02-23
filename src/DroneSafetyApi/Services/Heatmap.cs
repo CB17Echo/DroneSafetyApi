@@ -17,15 +17,15 @@ namespace DroneSafetyApi.Services
 
         const int MetresInLatDegree = 110575;
 
-        public HeatMap(double minX, double maxX, double minY, double maxY)
+        public HeatMap(double minX, double maxX, double minY, double maxY, int width, int height)
         {
             StartX = minX;
             StartY = minY;
             EndX = maxX;
             EndY = maxY;
 
-            DeltaX = (maxX - minX) / 1000;
-            DeltaY = (maxY - minY) / 1000;
+            DeltaX = (maxX - minX) / width;
+            DeltaY = (maxY - minY) / height;
 
             Map = new Dictionary<Position, int>();
             

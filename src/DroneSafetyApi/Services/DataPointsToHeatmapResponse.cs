@@ -8,10 +8,10 @@ namespace DroneSafetyApi.Services
     public class DataPointsToHeatmapResponse : DataPointsToHeatmapsResponseNoCompositionSendAllSources
     {
 
-        public override HeatMap ConvertToHeatmap(BoundingBox area, IEnumerable<DataPoint> datapoints)
+        public override HeatMap ConvertToHeatmap(BoundingBox area, int width, int height, IEnumerable<DataPoint> datapoints)
         {
             // Initialise Heatmap
-            HeatMap heatmap = new HeatMap(area.Min.Longitude, area.Max.Longitude, area.Min.Latitude, area.Max.Latitude);
+            HeatMap heatmap = new HeatMap(area.Min.Longitude, area.Max.Longitude, area.Min.Latitude, area.Max.Latitude, width, height);
 
             foreach (DataPoint datapoint in datapoints)
             {

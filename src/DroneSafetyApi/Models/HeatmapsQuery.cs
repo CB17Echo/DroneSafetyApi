@@ -9,12 +9,14 @@ namespace DroneSafetyApi.Models
         public double CornerOneLon { get; set; }
         public double CornerTwoLat { get; set; }
         public double CornerTwoLon { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         public bool Bad
         {
             get
             {
-                return (CornerTwoLat - CornerOneLat < 0);
+                return (Width < 0 || Height < 0);
             }
         }
 

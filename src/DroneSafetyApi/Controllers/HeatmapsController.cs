@@ -31,6 +31,8 @@ namespace DroneSafetyApi.Controllers
             var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, 100000);
             var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
+                query.Width,
+                query.Height,
                 intersectionHazards
                 );
             return new ObjectResult(heatmapsResponse);

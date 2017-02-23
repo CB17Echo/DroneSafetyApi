@@ -8,6 +8,8 @@ namespace DroneSafetyApi.Services
     {
         HeatmapsResponse ConvertToHeatmapResponse(
             BoundingBox area,
+            int width,
+            int height,
             IEnumerable<DataPoint> datapoints);
     }
 }
