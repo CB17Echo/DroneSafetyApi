@@ -1,4 +1,5 @@
-﻿using DroneSafetyApi.Models;
+﻿using System;
+using DroneSafetyApi.Models;
 using Microsoft.Azure.Documents.Spatial;
 using System.Collections.Generic;
 
@@ -6,10 +7,10 @@ namespace DroneSafetyApi.Data
 {
     public class ExamplesDataRespository : IDataPointRepository
     {
-        public IEnumerable<DataPoint> GetDataPointsInRadius(Point point, int radius)
+        public IEnumerable<DataPoint> GetDataPointsInRadius(Point point, int radius, DateTime time)
         {
 
-            return new DataPoint[] 
+            return new DataPoint[]
             {
                 new DataPoint
                 {
@@ -25,7 +26,8 @@ namespace DroneSafetyApi.Data
                             new Position(0.11, 52.205),
                             new Position(0.11, 52.203)
                         }),
-                    Data_ID = 5
+                    Data_ID = 5,
+                    Time = time
                 },
                 new DataPoint
                 {
@@ -41,7 +43,8 @@ namespace DroneSafetyApi.Data
                             new Position(0.11, 52.205),
                             new Position(0.11, 52.203)
                         }),
-                    Data_ID = 5
+                    Data_ID = 5,
+                    Time = time
                 },
                 new DataPoint
                 {
@@ -49,7 +52,8 @@ namespace DroneSafetyApi.Data
                     Shape = "Point",
                     Severity = 50,
                     Location = new Point(0.115, 52.204),
-                    Data_ID = 8
+                    Data_ID = 8,
+                    Time = time
                 }
             };
         }

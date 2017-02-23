@@ -1,16 +1,17 @@
-﻿using Microsoft.Azure.Documents.Spatial;
+﻿using System;
+using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Models
 {
     public class HeatmapsQuery
     {
-        // TODO: Find a better way to select granularity
         public double CornerOneLat { get; set; }
         public double CornerOneLon { get; set; }
         public double CornerTwoLat { get; set; }
         public double CornerTwoLon { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public DateTime Time { get; set; }
 
         public bool Bad
         {

@@ -3,6 +3,7 @@ using DroneSafetyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using DroneSafetyApi.Data;
+using System;
 
 namespace DroneSafetyApi.Controllers
 {
@@ -10,6 +11,8 @@ namespace DroneSafetyApi.Controllers
     [EnableCors("CorsPolicy")]
     public class HeatmapsController : Controller
     {
+        const int MetresInLatDegree = 110575;
+
         public IDataPointRepository DataPoints { get; set; }
         public IDataPointsToHeatmapsResponse DataPointsToHeatmaps { get; set; }
         public HeatmapsController(
@@ -27,8 +30,11 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-            // TODO: Decide optimal radius value, and put value/computation in appropriate place.
-            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, 100000);
+            var radius = (int) (Math.Sqrt(((query.Area.Max.Latitude - query.Area.Min.Latitude) *
+                (query.Area.Max.Latitude - query.Area.Min.Latitude)) +
+                ((query.Area.Max.Longitude - query.Area.Min.Longitude) *
+                (query.Area.Max.Longitude - query.Area.Min.Longitude)))) * MetresInLatDegree;
+            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, radius, new DateTime(2017,3,8,12,0,0));
             var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
                 query.Width,

@@ -29,11 +29,12 @@ namespace DroneSafetyApi.Data
             client.CreateDocumentCollectionAsync(database.SelfLink, collection);
         }
 
-        public IEnumerable<DataPoint> GetDataPointsInRadius(Point location, int radius)
+        public IEnumerable<DataPoint> GetDataPointsInRadius(Point location, int radius, DateTime time)
         {
             var query = client
                 .CreateDocumentQuery<DataPoint>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
-                .Where(c => c.Location.Distance(location) < radius);
+                .Where(c => c.Location.Distance(location) < radius)
+                .Where(c => (c.Time < time.AddHours(1)) && (c.Time > time.AddHours(-1)));
             return query;
         }
     }

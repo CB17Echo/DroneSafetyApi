@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Azure.Documents.Spatial;
 using DroneSafetyApi.Models;
 
@@ -8,6 +9,6 @@ namespace DroneSafetyApi.Data
 {
     public interface IDataPointRepository
     {
-        IEnumerable<DataPoint> GetDataPointsInRadius(Point point, int radius);
+        IEnumerable<DataPoint> GetDataPointsInRadius(Point point, int radius, DateTime time);
     }
 }
