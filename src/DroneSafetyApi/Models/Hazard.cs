@@ -2,7 +2,7 @@
 
 namespace DroneSafetyApi.Models
 {
-    public class DataPoint
+    public class Hazard
     {
         public int Data_ID { get; set; }
         public string DataType { get; set; }

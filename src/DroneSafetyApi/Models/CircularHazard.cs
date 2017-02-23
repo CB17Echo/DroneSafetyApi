@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Models
 {
-    public class CircleDataPoint : DataPoint
+    public class CircularHazard : Hazard
     {
         public int Radius { get; set; }
     }

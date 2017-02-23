@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace DroneSafetyApi.Data
 {
-    public class ExamplesDataRespository : IDataPointRepository
+    public class ExamplesDataRespository : IHazardRepository
     {
-        public IEnumerable<DataPoint> GetDataPointsInRadius(Point point, int radius)
+        public IEnumerable<Hazard> GetHazardsInRadius(Point point, int radius)
         {
 
-            return new DataPoint[] 
+            return new Hazard[] 
             {
-                new DataPoint
+                new Hazard
                 {
                     DataType = "Bus",
                     Shape = "Polygon",
@@ -27,7 +27,7 @@ namespace DroneSafetyApi.Data
                         }),
                     Data_ID = 5
                 },
-                new DataPoint
+                new Hazard
                 {
                     DataType = "Car",
                     Shape = "Polygon",
@@ -43,7 +43,7 @@ namespace DroneSafetyApi.Data
                         }),
                     Data_ID = 5
                 },
-                new DataPoint
+                new Hazard
                 {
                     DataType = "I",
                     Shape = "Point",

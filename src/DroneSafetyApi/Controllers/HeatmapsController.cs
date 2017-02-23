@@ -10,14 +10,14 @@ namespace DroneSafetyApi.Controllers
     [EnableCors("CorsPolicy")]
     public class HeatmapsController : Controller
     {
-        public IDataPointRepository DataPoints { get; set; }
-        public IDataPointsToHeatmapsResponse DataPointsToHeatmaps { get; set; }
+        public IHazardRepository Hazards { get; set; }
+        public IHazardsToHeatmapsResponse HazardsToHeatmaps { get; set; }
         public HeatmapsController(
-            IDataPointRepository hazards,
-            IDataPointsToHeatmapsResponse hazardsToHeatmaps)
+            IHazardRepository hazards,
+            IHazardsToHeatmapsResponse hazardsToHeatmaps)
         {
-            DataPoints = hazards;
-            DataPointsToHeatmaps = hazardsToHeatmaps;
+            Hazards = hazards;
+            HazardsToHeatmaps = hazardsToHeatmaps;
         }
 
         [HttpGet]
@@ -28,8 +28,8 @@ namespace DroneSafetyApi.Controllers
                 return new BadRequestResult();
             }
             // TODO: Decide optimal radius value, and put value/computation in appropriate place.
-            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, 100000);
-            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
+            var intersectionHazards = Hazards.GetHazardsInRadius(query.Centre, 100000);
+            var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Resolution,
                 query.Area,
                 intersectionHazards

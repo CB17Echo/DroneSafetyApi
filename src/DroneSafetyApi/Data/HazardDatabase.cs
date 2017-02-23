@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Data
 {
-    public class DataPointDatabase : IDataPointRepository
+    public class HazardDatabase : IHazardRepository
     {
         private static string CollectionName = "Hazards";
 
@@ -18,7 +18,7 @@ namespace DroneSafetyApi.Data
         private Database database;
         private DocumentCollection collection;
 
-        public DataPointDatabase(IOptions<DbOptions> config)
+        public HazardDatabase(IOptions<DbOptions> config)
         {
             var dbConfig = config.Value;
             client = new DocumentClient(new Uri(dbConfig.EndpointUri), dbConfig.Key);
@@ -26,10 +26,10 @@ namespace DroneSafetyApi.Data
             collection = client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, new DocumentCollection { Id = CollectionName }).Result;
         }
 
-        public IEnumerable<DataPoint> GetDataPointsInRadius(Point location, int radius)
+        public IEnumerable<Hazard> GetHazardsInRadius(Point location, int radius)
         {
             var query = client
-                .CreateDocumentQuery<DataPoint>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
+                .CreateDocumentQuery<Hazard>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
                 .Where(c => c.Location.Distance(location) < radius);
             return query;
         }

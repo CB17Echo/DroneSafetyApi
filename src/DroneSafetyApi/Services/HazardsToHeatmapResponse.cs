@@ -5,32 +5,32 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Services
 {
-    public class DataPointsToHeatmapResponse : DataPointsToHeatmapsResponseNoCompositionSendAllSources
+    public class HazardsToHeatmapResponse : HazardsToHeatmapsResponseNoCompositionSendAllSources
     {
 
         const int MetresInLatDegree = 110575;
 
-        public override HeatMap ConvertToHeatmap(double resolution, BoundingBox area, IEnumerable<DataPoint> datapoints)
+        public override HeatMap ConvertToHeatmap(double resolution, BoundingBox area, IEnumerable<Hazard> hazards)
         {
             // Initialise Heatmap
             HeatMap heatmap = new HeatMap(area.Min.Longitude, area.Max.Longitude, area.Min.Latitude, area.Max.Latitude, resolution);
 
-            foreach (DataPoint datapoint in datapoints)
+            foreach (Hazard hazard in hazards)
             {
-                switch (datapoint.Shape)
+                switch (hazard.Shape)
                 {
                     case "Point":
-                        Point point = (Point)datapoint.Location;
-                        ProcessPoint(point, heatmap, datapoint.Severity);
+                        Point point = (Point)hazard.Location;
+                        ProcessPoint(point, heatmap, hazard.Severity);
                         break;
-                    case "Circle":
-                        Point centre = (Point)datapoint.Location;
-                        CircleDataPoint circle = (CircleDataPoint)datapoint;
-                        ProcessCircle(centre, circle.Radius, heatmap, datapoint.Severity);
+                    case "Cirlce":
+                        Point centre = (Point)hazard.Location;
+                        CircularHazard circle = (CircularHazard)hazard;
+                        ProcessCircle(centre, circle.Radius, heatmap, hazard.Severity);
                         break;
                     case "Polygon":
-                        Polygon polygon = (Polygon)datapoint.Location;
-                        ProcessPolygon(polygon, heatmap, datapoint.Severity);
+                        Polygon polygon = (Polygon)hazard.Location;
+                        ProcessPolygon(polygon, heatmap, hazard.Severity);
                         break;
                     default:
                         break;
