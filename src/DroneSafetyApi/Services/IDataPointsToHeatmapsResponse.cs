@@ -7,7 +7,6 @@ namespace DroneSafetyApi.Services
     public interface IDataPointsToHeatmapsResponse
     {
         HeatmapsResponse ConvertToHeatmapResponse(
-            double resolution,
             BoundingBox area,
             IEnumerable<DataPoint> datapoints);
     }

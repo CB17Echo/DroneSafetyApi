@@ -5,7 +5,6 @@ namespace DroneSafetyApi.Models
     public class HeatmapsQuery
     {
         // TODO: Find a better way to select granularity
-        public double Resolution { get; set; }
         public double CornerOneLat { get; set; }
         public double CornerOneLon { get; set; }
         public double CornerTwoLat { get; set; }
@@ -15,7 +14,7 @@ namespace DroneSafetyApi.Models
         {
             get
             {
-                return (Resolution < 0);
+                return (CornerTwoLat - CornerOneLat < 0);
             }
         }
 
