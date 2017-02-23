@@ -12,7 +12,7 @@ namespace DroneSafetyApi.Data
 {
     public class HazardDatabase : IHazardRepository
     {
-        private static string CollectionName = "Hazards";
+        private static string CollectionName = "hazards";
 
         private DocumentClient client;
         private Database database;

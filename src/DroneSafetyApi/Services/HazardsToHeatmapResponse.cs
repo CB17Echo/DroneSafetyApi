@@ -20,17 +20,16 @@ namespace DroneSafetyApi.Services
                 switch (hazard.Shape)
                 {
                     case "Point":
-                        Point point = (Point)hazard.Location;
-                        ProcessPoint(point, heatmap, hazard.Severity);
+                        PointHazard point = (PointHazard)hazard;
+                        ProcessPoint(point.Location, heatmap, hazard.Severity);
                         break;
-                    case "Cirlce":
-                        Point centre = (Point)hazard.Location;
+                    case "Circle":
                         CircularHazard circle = (CircularHazard)hazard;
-                        ProcessCircle(centre, circle.Radius, heatmap, hazard.Severity);
+                        ProcessCircle(circle.Location, circle.Radius, heatmap, hazard.Severity);
                         break;
                     case "Polygon":
-                        Polygon polygon = (Polygon)hazard.Location;
-                        ProcessPolygon(polygon, heatmap, hazard.Severity);
+                        PolygonalHazard polygon = (PolygonalHazard)hazard;
+                        ProcessPolygon(polygon.Location, heatmap, hazard.Severity);
                         break;
                     default:
                         break;

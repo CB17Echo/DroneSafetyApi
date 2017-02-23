@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Models
 {
-    public class CircularHazard : Hazard
+    public class PolygonalHazard : Hazard
     {
-        public new Point Location { get; set; }
-        public int Radius { get; set; } //Unit is meters
+        public new Polygon Location;
     }
 }
