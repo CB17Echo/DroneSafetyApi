@@ -33,6 +33,7 @@ namespace DroneSafetyApi.Services
 
         private void AddHazard(double x, double y, int v)
         {
+            if(x < StartX || x > EndX || y < StartY || y > EndY) { return; }
             Position pos = new Position(x, y);
             if (Map.ContainsKey(pos))
             {
