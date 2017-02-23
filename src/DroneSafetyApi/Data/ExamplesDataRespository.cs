@@ -25,7 +25,6 @@ namespace DroneSafetyApi.Data
                             new Position(0.11, 52.205),
                             new Position(0.11, 52.203)
                         }),
-                    Data_ID = 5
                 },
                 new Hazard
                 {
@@ -41,7 +40,6 @@ namespace DroneSafetyApi.Data
                             new Position(0.11, 52.205),
                             new Position(0.11, 52.203)
                         }),
-                    Data_ID = 5
                 },
                 new Hazard
                 {
@@ -49,7 +47,6 @@ namespace DroneSafetyApi.Data
                     Shape = "Point",
                     Severity = 50,
                     Location = new Point(0.115, 52.204),
-                    Data_ID = 8
                 }
             };
         }

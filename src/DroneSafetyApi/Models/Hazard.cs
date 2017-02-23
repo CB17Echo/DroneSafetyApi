@@ -4,7 +4,6 @@ namespace DroneSafetyApi.Models
 {
     public class Hazard
     {
-        public int Data_ID { get; set; }
         public string DataType { get; set; }
         public string Shape { get;  set; }
         public int Time { get; set; }
