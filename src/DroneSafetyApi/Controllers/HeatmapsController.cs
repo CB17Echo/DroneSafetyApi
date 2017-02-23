@@ -34,7 +34,7 @@ namespace DroneSafetyApi.Controllers
                 (query.Area.Max.Latitude - query.Area.Min.Latitude)) +
                 ((query.Area.Max.Longitude - query.Area.Min.Longitude) *
                 (query.Area.Max.Longitude - query.Area.Min.Longitude)))) * MetresInLatDegree;
-            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, radius, new DateTime(2017,3,8,12,0,0));
+            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, radius, query.Time);
             var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
                 query.Width,
