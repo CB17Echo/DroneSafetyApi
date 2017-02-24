@@ -19,7 +19,8 @@ namespace DroneSafetyApi
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("dbsettings.json");
 
             if (env.IsEnvironment("Development"))
             {
@@ -50,8 +51,9 @@ namespace DroneSafetyApi
 
             services.AddMvc();
 
-            services.AddSingleton<IDataPointRepository, ExamplesDataRespository>();
-            services.AddSingleton<IDataPointsToHeatmapsResponse, DataPointsToHeatmapResponse>();
+            services.Configure<DbOptions>(Configuration.GetSection("DocumentDB"));
+            services.AddSingleton<IHazardRepository, HazardDatabase>();
+            services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

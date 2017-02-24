@@ -1,8 +1,10 @@
-﻿using DroneSafetyApi.Models;
+﻿using System.Collections.Generic;
+using DroneSafetyApi.Models;
 using DroneSafetyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using DroneSafetyApi.Data;
+using System.Linq;
 
 namespace DroneSafetyApi.Controllers
 {
@@ -10,14 +12,14 @@ namespace DroneSafetyApi.Controllers
     [EnableCors("CorsPolicy")]
     public class HeatmapsController : Controller
     {
-        public IDataPointRepository DataPoints { get; set; }
-        public IDataPointsToHeatmapsResponse DataPointsToHeatmaps { get; set; }
+        public IHazardRepository Hazards { get; set; }
+        public IHazardsToHeatmapsResponse HazardsToHeatmaps { get; set; }
         public HeatmapsController(
-            IDataPointRepository hazards,
-            IDataPointsToHeatmapsResponse hazardsToHeatmaps)
+            IHazardRepository hazards,
+            IHazardsToHeatmapsResponse hazardsToHeatmaps)
         {
-            DataPoints = hazards;
-            DataPointsToHeatmaps = hazardsToHeatmaps;
+            Hazards = hazards;
+            HazardsToHeatmaps = hazardsToHeatmaps;
         }
 
         [HttpGet]
@@ -28,8 +30,10 @@ namespace DroneSafetyApi.Controllers
                 return new BadRequestResult();
             }
             // TODO: Decide optimal radius value, and put value/computation in appropriate place.
-            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, 100000);
-            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
+            var intersectionHazards = ((IEnumerable<Hazard>)Hazards.GetHazardsInRadius<CircularHazard>(query.Centre, 100000, "Circle"))
+                                        .Concat(Hazards.GetHazardsInRadius<PolygonalHazard>(query.Centre, 100000, "Polygon"))
+                                        .Concat(Hazards.GetHazardsInRadius<PointHazard>(query.Centre, 100000, "Point"));
+            var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Resolution,
                 query.Area,
                 intersectionHazards
