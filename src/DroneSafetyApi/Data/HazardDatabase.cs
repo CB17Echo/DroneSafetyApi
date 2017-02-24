@@ -26,11 +26,11 @@ namespace DroneSafetyApi.Data
             collection = client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, new DocumentCollection { Id = CollectionName }).Result;
         }
 
-        public IEnumerable<Hazard> GetHazardsInRadius(Point location, int radius)
+        public IEnumerable<T> GetHazardsInRadius<T>(Point location, int radius, string ShapeName) where T : Hazard
         {
             var query = client
-                .CreateDocumentQuery<Hazard>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
-                .Where(c => c.Location.Distance(location) < radius);
+                .CreateDocumentQuery<T>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
+                .Where(c => c.Location.Distance(location) < radius && c.Shape == ShapeName);
             return query;
         }
     }

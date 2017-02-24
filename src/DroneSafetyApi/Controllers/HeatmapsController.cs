@@ -1,8 +1,10 @@
-﻿using DroneSafetyApi.Models;
+﻿using System.Collections.Generic;
+using DroneSafetyApi.Models;
 using DroneSafetyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using DroneSafetyApi.Data;
+using System.Linq;
 
 namespace DroneSafetyApi.Controllers
 {
@@ -28,7 +30,9 @@ namespace DroneSafetyApi.Controllers
                 return new BadRequestResult();
             }
             // TODO: Decide optimal radius value, and put value/computation in appropriate place.
-            var intersectionHazards = Hazards.GetHazardsInRadius(query.Centre, 100000);
+            var intersectionHazards = ((IEnumerable<Hazard>)Hazards.GetHazardsInRadius<CircularHazard>(query.Centre, 100000, "Circle"))
+                                        .Concat(Hazards.GetHazardsInRadius<PolygonalHazard>(query.Centre, 100000, "Polygon"))
+                                        .Concat(Hazards.GetHazardsInRadius<PointHazard>(query.Centre, 100000, "Point"));
             var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Resolution,
                 query.Area,
