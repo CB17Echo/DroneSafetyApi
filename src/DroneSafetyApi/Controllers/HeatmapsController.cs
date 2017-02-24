@@ -1,9 +1,11 @@
-﻿using DroneSafetyApi.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DroneSafetyApi.Models;
 using DroneSafetyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using DroneSafetyApi.Data;
-using System;
 
 namespace DroneSafetyApi.Controllers
 {
@@ -13,14 +15,14 @@ namespace DroneSafetyApi.Controllers
     {
         const int MetresInLatDegree = 110575;
 
-        public IDataPointRepository DataPoints { get; set; }
-        public IDataPointsToHeatmapsResponse DataPointsToHeatmaps { get; set; }
+        public IHazardRepository Hazards { get; set; }
+        public IHazardsToHeatmapsResponse HazardsToHeatmaps { get; set; }
         public HeatmapsController(
-            IDataPointRepository hazards,
-            IDataPointsToHeatmapsResponse hazardsToHeatmaps)
+            IHazardRepository hazards,
+            IHazardsToHeatmapsResponse hazardsToHeatmaps)
         {
-            DataPoints = hazards;
-            DataPointsToHeatmaps = hazardsToHeatmaps;
+            Hazards = hazards;
+            HazardsToHeatmaps = hazardsToHeatmaps;
         }
 
         [HttpGet]
@@ -34,8 +36,11 @@ namespace DroneSafetyApi.Controllers
                 (query.Area.Max.Latitude - query.Area.Min.Latitude)) +
                 ((query.Area.Max.Longitude - query.Area.Min.Longitude) *
                 (query.Area.Max.Longitude - query.Area.Min.Longitude)))) * MetresInLatDegree;
-            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, radius, query.Time);
-            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
+            var intersectionHazards = ((IEnumerable<Hazard>)
+                Hazards.GetHazardsInRadius<CircularHazard>(query.Centre, radius, "Circle", query.Time))
+                .Concat(Hazards.GetHazardsInRadius<PolygonalHazard>(query.Centre, radius, "Polygon", query.Time))
+                .Concat(Hazards.GetHazardsInRadius<PointHazard>(query.Centre, radius, "Point", query.Time));
+            var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
                 query.Width,
                 query.Height,

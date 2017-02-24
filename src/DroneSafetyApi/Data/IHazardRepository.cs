@@ -7,8 +7,8 @@ using DroneSafetyApi.Models;
 // Fix namespace in all the data classes and their Dependencies
 namespace DroneSafetyApi.Data
 {
-    public interface IDataPointRepository
+    public interface IHazardRepository
     {
-        IEnumerable<DataPoint> GetDataPointsInRadius(Point point, int radius, DateTime time);
+        IEnumerable<Hazard> GetHazardsInRadius<T>(Point point, int radius, string ShapeName, DateTime time) where T : Hazard;
     }
 }

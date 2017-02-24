@@ -1,4 +1,5 @@
 ﻿using DroneSafetyApi.Models;
+using System;
 using System.Collections.Generic;
 using Microsoft.Azure.Documents.Spatial;
 
@@ -15,6 +16,9 @@ namespace DroneSafetyApi.Services
         private double DeltaX;
         private double DeltaY;
 
+        private int DecimalPlacesX;
+        private int DecimalPlacesY;
+
         const int MetresInLatDegree = 110575;
 
         public HeatMap(double minX, double maxX, double minY, double maxY, int width, int height)
@@ -26,6 +30,25 @@ namespace DroneSafetyApi.Services
 
             DeltaX = (maxX - minX) / width;
             DeltaY = (maxY - minY) / height;
+            DecimalPlacesX = 0;
+            while ((int)DeltaX % 10 == 0)
+            {
+                DecimalPlacesX++;
+                DeltaX *= 10;
+            }
+            DeltaX /= Math.Pow(10, DecimalPlacesX);
+            DecimalPlacesX += (int)Math.Log10(width);
+            DeltaX = Math.Round(DeltaX, DecimalPlacesX);
+
+            DecimalPlacesY = 0;
+            while ((int)DeltaY % 10 == 0)
+            {
+                DecimalPlacesY++;
+                DeltaY *= 10;
+            }
+            DeltaY /= Math.Pow(10, DecimalPlacesY);
+            DecimalPlacesY += (int)Math.Log10(height);
+            DeltaY = Math.Round(DeltaY, DecimalPlacesY);
 
             Map = new Dictionary<Position, int>();
             
@@ -34,7 +57,7 @@ namespace DroneSafetyApi.Services
         private void AddHazard(double x, double y, int v)
         {
             if(x < StartX || x > EndX || y < StartY || y > EndY) { return; }
-            Position pos = new Position(x, y);
+            Position pos = new Position(Math.Round(x, DecimalPlacesX), Math.Round(y, DecimalPlacesY));
             if (Map.ContainsKey(pos))
             {
                 Map[pos] += v;
@@ -64,8 +87,8 @@ namespace DroneSafetyApi.Services
         {
             int aX = (int)((pos.Longitude - StartX) / DeltaX);
             int aY = (int)((pos.Latitude - StartY) / DeltaY);
-            double x = StartX + DeltaX * aX;
-            double y = StartY + DeltaY * aY;
+            double x = Math.Round(StartX + DeltaX * aX, DecimalPlacesX);
+            double y = Math.Round(StartY + DeltaY * aY, DecimalPlacesY);
             return new Position (x, y);
         }
 
@@ -80,20 +103,30 @@ namespace DroneSafetyApi.Services
             Position center = GetNearestPosition(circleCentre.Position);
             double lon = center.Longitude;
             double lat = center.Latitude;
+            AddHazard(lon, lat, value);
 
             double radiusDeg = MetresToDegrees(radius);
 
             int radiusStepsX = (int)(radiusDeg / DeltaX);
             int radiusStepsY = (int)(radiusDeg / DeltaY);
-
-            for (int x = 0; x < radiusStepsX; x++)
-                for (int y = 0; y < radiusStepsX; y++)
+            if (radiusStepsX > 0)
+            {
+                AddHazard(lon - DeltaX, lat, value);
+                AddHazard(lon + DeltaX, lat, value);
+            }
+            if (radiusStepsY > 0)
+            {
+                AddHazard(lon, lat - DeltaY, value);
+                AddHazard(lon, lat + DeltaY, value);
+            }
+            for (int x = 1; x < radiusStepsX; x++)
+                for (int y = 1; y < radiusStepsX; y++)
                 {
                     if (x * x + y * y <= radiusStepsX * radiusStepsY)
                     {
+                        
                         double deltaLon = x * DeltaX;
                         double deltaLat = y * DeltaY;
-
                         AddHazard(lon - deltaLon, lat - deltaLat, value);
                         AddHazard(lon - deltaLon, lat + deltaLat, value);
                         AddHazard(lon + deltaLon, lat - deltaLat, value);
@@ -132,11 +165,10 @@ namespace DroneSafetyApi.Services
 
             // Calculate grid elements to go through
             Position start = GetNearestPosition(new Position(minLong, minLat));
-            Position end = GetNearestPosition(new Position(maxLong, maxLat));
 
-            for (double x = start.Longitude; x < end.Longitude; x += DeltaX)
+            for (double x = start.Longitude; x < maxLong; x += DeltaX)
             {
-                for (double y = start.Latitude; y < end.Latitude; y += DeltaY)
+                for (double y = start.Latitude; y < maxLat; y += DeltaY)
                 {
                     if (InHazard(x, y, polygon))
                     {
