@@ -1,11 +1,9 @@
 ﻿language: csharp
-
-solution: DroneSafetyApi.sln
-
-dotnet: 1.0.0-preview2-003121
-
-mono: none
-
-dist: trusty
-
 sudo: required
+dist: trusty
+mono: now
+dotnet: 1.0.0-preview2-003131
+before_script:
+ - chmod a+x ./build.sh
+script:
+ - ./build.sh
