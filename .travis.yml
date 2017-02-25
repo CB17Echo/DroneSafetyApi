@@ -1,2 +1,5 @@
 language: csharp
-solution: DroneSafetyApi.sln
+os: linux
+dist: trusty
+sudo: required
+dotnet: 1.0.0-preview2-003121
