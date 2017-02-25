@@ -9,55 +9,34 @@ namespace DroneSafetyApi.Services
     public class HeatMap
     {
         private Dictionary<Position, int> Map;
-        private double StartX;
-        private double StartY;
-        private double EndX;
-        private double EndY;
-        private double DeltaX;
-        private double DeltaY;
+        private double MinLon;
+        private double MinLat;
+        private double MaxLon;
+        private double MaxLat;
 
-        private int DecimalPlacesX;
-        private int DecimalPlacesY;
+        private double Resolution;
+
 
         public const int MetresInLatDegree = 110575;
 
-        public HeatMap(double minX, double maxX, double minY, double maxY, int width, int height)
+        public HeatMap(double minX, double maxX, double minY, double maxY, int NumberLonPoints)
         {
-            StartX = minX;
-            StartY = minY;
-            EndX = maxX;
-            EndY = maxY;
+            MinLon = minX;
+            MinLat = minY;
+            MaxLon = maxX;
+            MaxLat = maxY;
 
-            DeltaX = (maxX - minX) / width;
-            DeltaY = (maxY - minY) / height;
-            DecimalPlacesX = 0;
-            while ((int)DeltaX % 10 == 0)
-            {
-                DecimalPlacesX++;
-                DeltaX *= 10;
-            }
-            DeltaX /= Math.Pow(10, DecimalPlacesX);
-            DecimalPlacesX += (int)Math.Log10(width);
-            DeltaX = Math.Round(DeltaX, DecimalPlacesX);
-
-            DecimalPlacesY = 0;
-            while ((int)DeltaY % 10 == 0)
-            {
-                DecimalPlacesY++;
-                DeltaY *= 10;
-            }
-            DeltaY /= Math.Pow(10, DecimalPlacesY);
-            DecimalPlacesY += (int)Math.Log10(height);
-            DeltaY = Math.Round(DeltaY, DecimalPlacesY);
-
+            Resolution = (MaxLon - MinLon) / NumberLonPoints;
             Map = new Dictionary<Position, int>();
             
         }
 
         private void AddHazard(double x, double y, int v)
         {
-            if(x < StartX || x > EndX || y < StartY || y > EndY) { return; }
-            Position pos = new Position(Math.Round(x, DecimalPlacesX), Math.Round(y, DecimalPlacesY));
+            if(x < MinLon || x > MaxLon || y < MinLat || y > MaxLat) { return; }
+
+            Position pos = GetNearestPosition(new Position(x, y));
+
             if (Map.ContainsKey(pos))
             {
                 Map[pos] += v;
@@ -85,11 +64,11 @@ namespace DroneSafetyApi.Services
 
         private Position GetNearestPosition(Position pos)
         {
-            int aX = (int)((pos.Longitude - StartX) / DeltaX);
-            int aY = (int)((pos.Latitude - StartY) / DeltaY);
-            double x = Math.Round(StartX + DeltaX * aX, DecimalPlacesX);
-            double y = Math.Round(StartY + DeltaY * aY, DecimalPlacesY);
-            return new Position (x, y);
+            decimal xRem = ((decimal)pos.Longitude) % ((decimal)Resolution);
+            decimal yRem = ((decimal)pos.Latitude) % ((decimal)Resolution);
+            decimal x = ((decimal)pos.Longitude) - xRem;
+            decimal y = ((decimal)pos.Latitude) - yRem;
+            return new Position((double)x, (double)y);
         }
 
         public void ProcessPoint(Point point, int value)
@@ -107,25 +86,25 @@ namespace DroneSafetyApi.Services
 
             double radiusDeg = MetresToDegrees(radius);
 
-            int radiusStepsX = (int)(radiusDeg / DeltaX);
-            int radiusStepsY = (int)(radiusDeg / DeltaY);
+            int radiusStepsX = (int)(radiusDeg / Resolution);
+            int radiusStepsY = (int)(radiusDeg / Resolution);
             if (radiusStepsX > 0)
             {
-                AddHazard(lon - DeltaX, lat, value);
-                AddHazard(lon + DeltaX, lat, value);
+                AddHazard(lon - Resolution, lat, value);
+                AddHazard(lon + Resolution, lat, value);
             }
             if (radiusStepsY > 0)
             {
-                AddHazard(lon, lat - DeltaY, value);
-                AddHazard(lon, lat + DeltaY, value);
+                AddHazard(lon, lat - Resolution, value);
+                AddHazard(lon, lat + Resolution, value);
             }
             for (int x = 1; x < radiusStepsX; x++)
                 for (int y = 1; y < radiusStepsX; y++)
                 {
                     if (x * x + y * y <= radiusStepsX * radiusStepsY)
                     {                       
-                        double deltaLon = x * DeltaX;
-                        double deltaLat = y * DeltaY;
+                        double deltaLon = x * Resolution;
+                        double deltaLat = y * Resolution;
                         AddHazard(lon - deltaLon, lat - deltaLat, value);
                         AddHazard(lon - deltaLon, lat + deltaLat, value);
                         AddHazard(lon + deltaLon, lat - deltaLat, value);
@@ -155,17 +134,17 @@ namespace DroneSafetyApi.Services
                 if (coord[i].Longitude < minLong) { minLong = coord[i].Longitude; }
                 else if (coord[i].Longitude > maxLong) { maxLong = coord[i].Longitude; }
             }
-            if (minLong < StartX) { minLong = StartX; }
-            if (maxLong > EndX) { maxLong = EndX; }
-            if (minLat < StartY) { minLat = StartY; }
-            if (maxLat > EndY) { maxLat = EndY; }
+            if (minLong < MinLon) { minLong = MinLon; }
+            if (maxLong > MaxLon) { maxLong = MaxLon; }
+            if (minLat < MinLat) { minLat = MinLat; }
+            if (maxLat > MaxLat) { maxLat = MaxLat; }
 
             // Calculate grid elements to go through
             Position start = GetNearestPosition(new Position(minLong, minLat));
 
-            for (double x = start.Longitude; x < maxLong; x += DeltaX)
+            for (double x = start.Longitude; x < maxLong; x += Resolution)
             {
-                for (double y = start.Latitude; y < maxLat; y += DeltaY)
+                for (double y = start.Latitude; y < maxLat; y += Resolution)
                 {
                     if (InHazard(x, y, polygon))
                     {
