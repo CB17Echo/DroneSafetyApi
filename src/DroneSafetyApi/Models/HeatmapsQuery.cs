@@ -17,7 +17,7 @@ namespace DroneSafetyApi.Models
         {
             get
             {
-                return (Width < 0 || Height < 0);
+                return (Width <= 0 || Height <= 0);
             }
         }
 
@@ -43,19 +43,13 @@ namespace DroneSafetyApi.Models
             }
         }
 
-        public int Radius
+        public int Radius { get; private set; }
+
+        public void CalculateRadius()
         {
-            get
-            {
-                if (Radius == 0)
-                {
-                    double delX = CornerTwoLat - CornerOneLat;
-                    double delY = CornerTwoLon - CornerOneLon;
-                    Radius = (int)(Math.Sqrt(delX * delX + delY * delY)) * Services.HeatMap.MetresInLatDegree;
-                }
-                return Radius;
-            }
-            private set { Radius = value; }
+            double delX = CornerTwoLat - CornerOneLat;
+            double delY = CornerTwoLon - CornerOneLon;
+            Radius = (int)(Math.Sqrt(delX * delX + delY * delY)) * Services.HeatMap.MetresInLatDegree;
         }
     }
 }

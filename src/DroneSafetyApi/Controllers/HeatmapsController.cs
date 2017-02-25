@@ -30,10 +30,8 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-            var intersectionHazards = ((IEnumerable<Hazard>)
-                Hazards.GetHazardsInRadius<CircularHazard>(query.Centre, query.Radius, "Circle", query.Time))
-                .Concat(Hazards.GetHazardsInRadius<PolygonalHazard>(query.Centre, query.Radius, "Polygon", query.Time))
-                .Concat(Hazards.GetHazardsInRadius<PointHazard>(query.Centre, query.Radius, "Point", query.Time));
+            query.CalculateRadius();
+            var intersectionHazards = Hazards.GetHazardsInRadius(query.Centre, query.Radius, query.Time);
             var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
                 query.Width,

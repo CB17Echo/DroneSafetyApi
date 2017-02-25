@@ -9,9 +9,9 @@ namespace DroneSafetyApi.Data
 {
     public class ExampleHazardRepository : IHazardRepository
     {
-        public IEnumerable<Hazard> GetHazardsInRadius<T>(Point point, int radius, string ShapeName, DateTime time) where T : Hazard
+        public IEnumerable<Hazard> GetHazardsInRadius(Point point, int radius, DateTime time)
         {
-            if (ShapeName == "Polygon") return new Hazard[]
+            return new Hazard[]
             {
                 new PolygonalHazard
                 {
@@ -49,9 +49,6 @@ namespace DroneSafetyApi.Data
                     StartTime = time,
                     EndTime = time
                 },
-            };
-            if (ShapeName == "Point") return new Hazard[]
-            {
                 new PointHazard
                 {
                     DataType = "Wifi",
@@ -60,11 +57,7 @@ namespace DroneSafetyApi.Data
                     Location = new Point(0.09, 52.21),
                     StartTime = time,
                     EndTime = time
-                } };
-
-            if (ShapeName == "Circle") return new Hazard[]
-            {
-                new CircularHazard
+                }, new CircularHazard
                 {
                     DataType = "Wifi",
                     Shape = "Circle",
@@ -74,7 +67,7 @@ namespace DroneSafetyApi.Data
                     EndTime = time,
                     Radius = 212
                 },
-            new CircularHazard
+                new CircularHazard
                 {
                     DataType = "Bus",
                     Shape = "Circle",
@@ -83,8 +76,8 @@ namespace DroneSafetyApi.Data
                     StartTime = time,
                     EndTime = time,
                     Radius = 600
-                }};
-            return new Hazard[] { };
+                }
+            };
         }
     }
 }

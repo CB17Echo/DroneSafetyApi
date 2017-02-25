@@ -51,8 +51,8 @@ namespace DroneSafetyApi
 
             services.AddMvc();
 
-            services.AddSingleton<IHazardRepository, Data.ExampleHazardRepository>();
-            services.AddSingleton<IHazardsToHeatmapsResponse, Services.HazardsToHeatmapResponse>();
+            services.AddSingleton<IHazardRepository, ExampleHazardRepository>();
+            services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
             //services.Configure<DbOptions>(Configuration.GetSection("DocumentDB"));
             //services.AddSingleton<IHazardRepository, HazardDatabase>();
             //services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
