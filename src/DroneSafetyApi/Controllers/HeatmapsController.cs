@@ -35,8 +35,7 @@ namespace DroneSafetyApi.Controllers
                 query.Area,
                 query.Width,
                 query.Height,
-                intersectionHazards
-                );
+                intersectionHazards);
             return new ObjectResult(heatmapsResponse);
         }
     }

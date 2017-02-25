@@ -9,10 +9,7 @@ namespace DroneSafetyApi.Services
     public class HeatMap
     {
         private Dictionary<Position, int> Map;
-        private double StartX;
-        private double StartY;
-        private double EndX;
-        private double EndY;
+        private Bounds Area;
         private double DeltaX;
         private double DeltaY;
 
@@ -21,15 +18,12 @@ namespace DroneSafetyApi.Services
 
         public const int MetresInLatDegree = 110575;
 
-        public HeatMap(double minX, double maxX, double minY, double maxY, int width, int height)
+        public HeatMap(Bounds area, int width, int height)
         {
-            StartX = minX;
-            StartY = minY;
-            EndX = maxX;
-            EndY = maxY;
+            Area = area;
 
-            DeltaX = (maxX - minX) / width;
-            DeltaY = (maxY - minY) / height;
+            DeltaX = (Area.Max.Longitude - Area.Min.Longitude) / width;
+            DeltaY = (Area.Max.Latitude - Area.Min.Latitude) / height;
             DecimalPlacesX = 0;
             while ((int)DeltaX % 10 == 0)
             {
@@ -50,13 +44,12 @@ namespace DroneSafetyApi.Services
             DecimalPlacesY += (int)Math.Log10(height);
             DeltaY = Math.Round(DeltaY, DecimalPlacesY);
 
-            Map = new Dictionary<Position, int>();
-            
+            Map = new Dictionary<Position, int>();     
         }
 
         private void AddHazard(double x, double y, int v)
         {
-            if(x < StartX || x > EndX || y < StartY || y > EndY) { return; }
+            if(x < Area.Min.Longitude || x > Area.Max.Longitude || y < Area.Min.Latitude || y > Area.Max.Latitude) return;
             Position pos = new Position(Math.Round(x, DecimalPlacesX), Math.Round(y, DecimalPlacesY));
             if (Map.ContainsKey(pos))
             {
@@ -85,10 +78,10 @@ namespace DroneSafetyApi.Services
 
         private Position GetNearestPosition(Position pos)
         {
-            int aX = (int)((pos.Longitude - StartX) / DeltaX);
-            int aY = (int)((pos.Latitude - StartY) / DeltaY);
-            double x = Math.Round(StartX + DeltaX * aX, DecimalPlacesX);
-            double y = Math.Round(StartY + DeltaY * aY, DecimalPlacesY);
+            int aX = (int)((pos.Longitude - Area.Min.Longitude) / DeltaX);
+            int aY = (int)((pos.Latitude - Area.Min.Latitude) / DeltaY);
+            double x = Math.Round(Area.Min.Longitude + DeltaX * aX, DecimalPlacesX);
+            double y = Math.Round(Area.Min.Latitude + DeltaY * aY, DecimalPlacesY);
             return new Position (x, y);
         }
 
@@ -155,10 +148,10 @@ namespace DroneSafetyApi.Services
                 if (coord[i].Longitude < minLong) { minLong = coord[i].Longitude; }
                 else if (coord[i].Longitude > maxLong) { maxLong = coord[i].Longitude; }
             }
-            if (minLong < StartX) { minLong = StartX; }
-            if (maxLong > EndX) { maxLong = EndX; }
-            if (minLat < StartY) { minLat = StartY; }
-            if (maxLat > EndY) { maxLat = EndY; }
+            if (minLong < Area.Min.Longitude) { minLong = Area.Min.Longitude; }
+            if (maxLong > Area.Max.Longitude) { maxLong = Area.Max.Longitude; }
+            if (minLat < Area.Min.Latitude) { minLat = Area.Min.Latitude; }
+            if (maxLat > Area.Max.Latitude) { maxLat = Area.Max.Latitude; }
 
             // Calculate grid elements to go through
             Position start = GetNearestPosition(new Position(minLong, minLat));

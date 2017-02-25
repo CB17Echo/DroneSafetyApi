@@ -7,7 +7,7 @@ namespace DroneSafetyApi.Services
     public interface IHazardsToHeatmapsResponse
     {
         HeatmapsResponse ConvertToHeatmapResponse(
-            BoundingBox area,
+            Bounds area,
             int width,
             int height,
             IEnumerable<Hazard> hazards);

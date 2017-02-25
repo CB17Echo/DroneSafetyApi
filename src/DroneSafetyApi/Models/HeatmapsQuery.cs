@@ -7,24 +7,37 @@ namespace DroneSafetyApi.Models
 {
     public class HeatmapsQuery
     {
-        public double CornerOneLat { get; set; }
         public double CornerOneLon { get; set; }
-        public double CornerTwoLat { get; set; }
+        public double CornerOneLat { get; set; }
         public double CornerTwoLon { get; set; }
+        public double CornerTwoLat { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Width must be a positive integer")]
         public int Width { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Height must be a positive integer")]
         public int Height { get; set; }
         public DateTime Time { get; set; }
 
-        public BoundingBox Area
+        private Position CornerOne
         {
             get
             {
-                return new BoundingBox(
-                    new Position(CornerOneLon, CornerOneLat),
-                    new Position(CornerTwoLon, CornerTwoLat)
-                    );
+                return new Position(CornerOneLon, CornerOneLat);
+            }
+        }
+
+        private Position CornerTwo
+        {
+            get
+            {
+                return new Position(CornerTwoLon, CornerTwoLat);
+            }
+        }
+
+        public Bounds Area
+        {
+            get
+            {
+                return new Bounds(CornerOne, CornerTwo);
             }
         }
 
@@ -43,9 +56,9 @@ namespace DroneSafetyApi.Models
         {
             get
             {
-                double delX = CornerTwoLat - CornerOneLat;
-                double delY = CornerTwoLon - CornerOneLon;
-                return (int)(Math.Sqrt(delX * delX + delY * delY)) * HeatMap.MetresInLatDegree;
+                double deltaLongitude = (CornerOne.Longitude - CornerTwo.Longitude)/2;
+                double deltaLatitude = (CornerOne.Latitude - CornerTwo.Latitude)/2;
+                return ((int) Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude)) * HeatMap.MetresInLatDegree;
             }
         }
     }
