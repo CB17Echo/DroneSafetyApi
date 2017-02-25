@@ -124,7 +124,7 @@ namespace DroneSafetyApi.UnitTests.ModelsTests
         private int PythagoreanDistanceInMetres(Position pointOne, Position pointTwo)
         {
             double deltaLongitude = pointOne.Longitude - pointTwo.Longitude;
-            double deltaLatitude = pointOne.Latitude - pointTwo.Longitude;
+            double deltaLatitude = pointOne.Latitude - pointTwo.Latitude;
             return ((int) Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude)) * HeatMap.MetresInLatDegree;
         }
 
