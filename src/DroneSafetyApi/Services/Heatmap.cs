@@ -19,7 +19,7 @@ namespace DroneSafetyApi.Services
         private int DecimalPlacesX;
         private int DecimalPlacesY;
 
-        const int MetresInLatDegree = 110575;
+        public const int MetresInLatDegree = 110575;
 
         public HeatMap(double minX, double maxX, double minY, double maxY, int width, int height)
         {
@@ -123,8 +123,7 @@ namespace DroneSafetyApi.Services
                 for (int y = 1; y < radiusStepsX; y++)
                 {
                     if (x * x + y * y <= radiusStepsX * radiusStepsY)
-                    {
-                        
+                    {                       
                         double deltaLon = x * DeltaX;
                         double deltaLat = y * DeltaY;
                         AddHazard(lon - deltaLon, lat - deltaLat, value);
@@ -160,8 +159,6 @@ namespace DroneSafetyApi.Services
             if (maxLong > EndX) { maxLong = EndX; }
             if (minLat < StartY) { minLat = StartY; }
             if (maxLat > EndY) { maxLat = EndY; }
-
-
 
             // Calculate grid elements to go through
             Position start = GetNearestPosition(new Position(minLong, minLat));

@@ -13,8 +13,6 @@ namespace DroneSafetyApi.Controllers
     [EnableCors("CorsPolicy")]
     public class HeatmapsController : Controller
     {
-        const int MetresInLatDegree = 110575;
-
         public IHazardRepository Hazards { get; set; }
         public IHazardsToHeatmapsResponse HazardsToHeatmaps { get; set; }
         public HeatmapsController(
@@ -32,14 +30,10 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-            var radius = (int) (Math.Sqrt(((query.Area.Max.Latitude - query.Area.Min.Latitude) *
-                (query.Area.Max.Latitude - query.Area.Min.Latitude)) +
-                ((query.Area.Max.Longitude - query.Area.Min.Longitude) *
-                (query.Area.Max.Longitude - query.Area.Min.Longitude)))) * MetresInLatDegree;
             var intersectionHazards = ((IEnumerable<Hazard>)
-                Hazards.GetHazardsInRadius<CircularHazard>(query.Centre, radius, "Circle", query.Time))
-                .Concat(Hazards.GetHazardsInRadius<PolygonalHazard>(query.Centre, radius, "Polygon", query.Time))
-                .Concat(Hazards.GetHazardsInRadius<PointHazard>(query.Centre, radius, "Point", query.Time));
+                Hazards.GetHazardsInRadius<CircularHazard>(query.Centre, query.Radius, "Circle", query.Time))
+                .Concat(Hazards.GetHazardsInRadius<PolygonalHazard>(query.Centre, query.Radius, "Polygon", query.Time))
+                .Concat(Hazards.GetHazardsInRadius<PointHazard>(query.Centre, query.Radius, "Point", query.Time));
             var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
                 query.Width,
