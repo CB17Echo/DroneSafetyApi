@@ -1,4 +1,7 @@
-﻿using DroneSafetyApi.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DroneSafetyApi.Models;
 using DroneSafetyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
@@ -10,14 +13,14 @@ namespace DroneSafetyApi.Controllers
     [EnableCors("CorsPolicy")]
     public class HeatmapsController : Controller
     {
-        public IDataPointRepository DataPoints { get; set; }
-        public IDataPointsToHeatmapsResponse DataPointsToHeatmaps { get; set; }
+        public IHazardRepository Hazards { get; set; }
+        public IHazardsToHeatmapsResponse HazardsToHeatmaps { get; set; }
         public HeatmapsController(
-            IDataPointRepository hazards,
-            IDataPointsToHeatmapsResponse hazardsToHeatmaps)
+            IHazardRepository hazards,
+            IHazardsToHeatmapsResponse hazardsToHeatmaps)
         {
-            DataPoints = hazards;
-            DataPointsToHeatmaps = hazardsToHeatmaps;
+            Hazards = hazards;
+            HazardsToHeatmaps = hazardsToHeatmaps;
         }
 
         [HttpGet]
@@ -27,11 +30,12 @@ namespace DroneSafetyApi.Controllers
             {
                 return new BadRequestResult();
             }
-            // TODO: Decide optimal radius value, and put value/computation in appropriate place.
-            var intersectionHazards = DataPoints.GetDataPointsInRadius(query.Centre, 100000);
-            var heatmapsResponse = DataPointsToHeatmaps.ConvertToHeatmapResponse(
-                query.Resolution,
+            query.CalculateRadius();
+            var intersectionHazards = Hazards.GetHazardsInRadius(query.Centre, query.Radius, query.Time);
+            var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
+                query.Width,
+                query.Height,
                 intersectionHazards
                 );
             return new ObjectResult(heatmapsResponse);

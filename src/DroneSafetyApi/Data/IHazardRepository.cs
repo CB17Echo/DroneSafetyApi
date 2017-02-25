@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Azure.Documents.Spatial;
 using DroneSafetyApi.Models;
 
@@ -6,8 +7,8 @@ using DroneSafetyApi.Models;
 // Fix namespace in all the data classes and their Dependencies
 namespace DroneSafetyApi.Data
 {
-    public interface IDataPointRepository
+    public interface IHazardRepository
     {
-        IEnumerable<DataPoint> GetDataPointsInRadius(Point point, int radius);
+        IEnumerable<Hazard> GetHazardsInRadius(Point point, int radius, DateTime time);
     }
 }

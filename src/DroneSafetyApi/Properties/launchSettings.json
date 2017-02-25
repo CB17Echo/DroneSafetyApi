@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/heatmaps?DecimalPlaceAccuracy=4&corneronelat=52.170983918129096&corneronelon=0.0707244873046875&cornertwolat=52.230743427331866&corner&cornertwolon=0.1847076416015625",
+      "launchUrl": "api/heatmaps?corneronelat=52.170983918129096&corneronelon=0.0707244873046875&cornertwolat=52.230743427331866&cornertwolon=0.1847076416015625&Width=500&Height=500",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,7 +19,7 @@
     "DroneSafetyApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000/api/heatmaps?DecimalPlaceAccuracy=4&corneronelat=52.170983918129096&corneronelon=0.0707244873046875&cornertwolat=52.230743427331866&corner&cornertwolon=0.1847076416015625",
+      "launchUrl": "http://localhost:5000/api/heatmaps?corneronelat=52.170983918129096&corneronelon=0.0707244873046875&cornertwolat=52.230743427331866&cornertwolon=0.1847076416015625&Width=500&Height=500",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

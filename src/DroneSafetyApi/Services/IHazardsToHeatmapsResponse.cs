@@ -4,11 +4,12 @@ using System.Collections.Generic;
 
 namespace DroneSafetyApi.Services
 {
-    public interface IDataPointsToHeatmapsResponse
+    public interface IHazardsToHeatmapsResponse
     {
         HeatmapsResponse ConvertToHeatmapResponse(
-            double resolution,
             BoundingBox area,
-            IEnumerable<DataPoint> datapoints);
+            int width,
+            int height,
+            IEnumerable<Hazard> hazards);
     }
 }

@@ -1,21 +1,23 @@
-﻿using Microsoft.Azure.Documents.Spatial;
+﻿using System;
+using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Models
 {
     public class HeatmapsQuery
     {
-        // TODO: Find a better way to select granularity
-        public double Resolution { get; set; }
         public double CornerOneLat { get; set; }
         public double CornerOneLon { get; set; }
         public double CornerTwoLat { get; set; }
         public double CornerTwoLon { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public DateTime Time { get; set; }
 
         public bool Bad
         {
             get
             {
-                return (Resolution < 0);
+                return (Width <= 0 || Height <= 0);
             }
         }
 
@@ -39,6 +41,15 @@ namespace DroneSafetyApi.Models
                     Area.Min.Latitude + (Area.Max.Latitude - Area.Min.Latitude) / 2
                     );
             }
+        }
+
+        public int Radius { get; private set; }
+
+        public void CalculateRadius()
+        {
+            double delX = CornerTwoLat - CornerOneLat;
+            double delY = CornerTwoLon - CornerOneLon;
+            Radius = (int)(Math.Sqrt(delX * delX + delY * delY)) * Services.HeatMap.MetresInLatDegree;
         }
     }
 }
