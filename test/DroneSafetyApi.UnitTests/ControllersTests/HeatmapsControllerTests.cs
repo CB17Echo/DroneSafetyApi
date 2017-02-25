@@ -60,7 +60,7 @@ namespace DroneSafetyApi.UnitTests.ControllersTests
             var mockHazardsToHeatmapsResponse = new Mock<IHazardsToHeatmapsResponse>();
             mockHazardsToHeatmapsResponse
                  .Setup(heatmapsResponseStrategy => heatmapsResponseStrategy.ConvertToHeatmapResponse(
-                     It.IsAny<BoundingBox>(),
+                     It.IsAny<Bounds>(),
                      It.IsAny<int>(),
                      It.IsAny<int>(),
                      It.IsAny<IEnumerable<Hazard>>()))
