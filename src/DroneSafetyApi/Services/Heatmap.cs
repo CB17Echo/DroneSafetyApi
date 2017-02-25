@@ -15,6 +15,7 @@ namespace DroneSafetyApi.Services
         private double MaxLat;
 
         private double Resolution;
+        
 
 
         public const int MetresInLatDegree = 110575;
@@ -27,6 +28,7 @@ namespace DroneSafetyApi.Services
             MaxLat = maxY;
 
             Resolution = (MaxLon - MinLon) / NumberLonPoints;
+            
             Map = new Dictionary<Position, int>();
             
         }
@@ -64,8 +66,17 @@ namespace DroneSafetyApi.Services
 
         private Position GetNearestPosition(Position pos)
         {
+            decimal halfRes = ((decimal)Resolution) / 2;
+
+
             decimal xRem = ((decimal)pos.Longitude) % ((decimal)Resolution);
             decimal yRem = ((decimal)pos.Latitude) % ((decimal)Resolution);
+
+            if (xRem > halfRes)
+                xRem *= -1;
+            if (yRem > halfRes)
+                yRem *= -1;
+
             decimal x = ((decimal)pos.Longitude) - xRem;
             decimal y = ((decimal)pos.Latitude) - yRem;
             return new Position((double)x, (double)y);
