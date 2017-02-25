@@ -11,7 +11,7 @@ namespace DroneSafetyApi.Services
         public override HeatMap ConvertToHeatmap(Bounds area, int width, int height, IEnumerable<Hazard> hazards)
         {
             // Initialise Heatmap
-            HeatMap heatmap = new HeatMap(area.Min.Longitude, area.Max.Longitude, area.Min.Latitude, area.Max.Latitude, width, height);
+            HeatMap heatmap = new HeatMap(area, width, height);
 
             foreach (Hazard hazard in hazards)
             {
