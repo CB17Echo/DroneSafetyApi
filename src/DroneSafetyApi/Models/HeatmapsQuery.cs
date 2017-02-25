@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.Azure.Documents.Spatial;
+using System.ComponentModel.DataAnnotations;
+using DroneSafetyApi.Services;
 
 namespace DroneSafetyApi.Models
 {
@@ -9,17 +11,11 @@ namespace DroneSafetyApi.Models
         public double CornerOneLon { get; set; }
         public double CornerTwoLat { get; set; }
         public double CornerTwoLon { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Width must be a positive integer")]
         public int Width { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Height must be a positive integer")]
         public int Height { get; set; }
         public DateTime Time { get; set; }
-
-        public bool Bad
-        {
-            get
-            {
-                return (Width <= 0 || Height <= 0);
-            }
-        }
 
         public BoundingBox Area
         {
@@ -43,13 +39,14 @@ namespace DroneSafetyApi.Models
             }
         }
 
-        public int Radius { get; private set; }
-
-        public void CalculateRadius()
+        public int Radius
         {
-            double delX = CornerTwoLat - CornerOneLat;
-            double delY = CornerTwoLon - CornerOneLon;
-            Radius = (int)(Math.Sqrt(delX * delX + delY * delY)) * Services.HeatMap.MetresInLatDegree;
+            get
+            {
+                double delX = CornerTwoLat - CornerOneLat;
+                double delY = CornerTwoLon - CornerOneLon;
+                return (int)(Math.Sqrt(delX * delX + delY * delY)) * HeatMap.MetresInLatDegree;
+            }
         }
     }
 }

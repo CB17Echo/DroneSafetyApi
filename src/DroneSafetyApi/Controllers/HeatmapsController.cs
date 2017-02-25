@@ -24,13 +24,12 @@ namespace DroneSafetyApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery]HeatmapsQuery query)
+        public IActionResult GetHeatmaps([FromQuery]HeatmapsQuery query)
         {
-            if (query.Bad)
+            if (!ModelState.IsValid)
             {
                 return new BadRequestResult();
             }
-            query.CalculateRadius();
             var intersectionHazards = Hazards.GetHazardsInRadius(query.Centre, query.Radius, query.Time);
             var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
                 query.Area,
