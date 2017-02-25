@@ -28,7 +28,7 @@ namespace DroneSafetyApi.Services
             MaxLat = maxY;
 
             Resolution = (MaxLon - MinLon) / NumberLonPoints;
-            
+
             Map = new Dictionary<Position, int>();
             
         }
@@ -38,6 +38,7 @@ namespace DroneSafetyApi.Services
             if(x < MinLon || x > MaxLon || y < MinLat || y > MaxLat) { return; }
 
             Position pos = GetNearestPosition(new Position(x, y));
+
 
             if (Map.ContainsKey(pos))
             {
@@ -68,7 +69,6 @@ namespace DroneSafetyApi.Services
         {
             decimal halfRes = ((decimal)Resolution) / 2;
 
-
             decimal xRem = ((decimal)pos.Longitude) % ((decimal)Resolution);
             decimal yRem = ((decimal)pos.Latitude) % ((decimal)Resolution);
 
@@ -77,9 +77,9 @@ namespace DroneSafetyApi.Services
             if (yRem > halfRes)
                 yRem *= -1;
 
-            decimal x = ((decimal)pos.Longitude) - xRem;
-            decimal y = ((decimal)pos.Latitude) - yRem;
-            return new Position((double)x, (double)y);
+            int dx = (int)((((decimal)pos.Longitude) - xRem) / (decimal) Resolution);
+            int dy = (int)((((decimal)pos.Latitude) - yRem) / (decimal) Resolution);
+            return new Position(dx * Resolution, dy * Resolution);
         }
 
         public void ProcessPoint(Point point, int value)
@@ -90,38 +90,22 @@ namespace DroneSafetyApi.Services
 
         public void ProcessCircle(Point circleCentre, int radius, int value)
         {
-            Position center = GetNearestPosition(circleCentre.Position);
-            double lon = center.Longitude;
-            double lat = center.Latitude;
-            AddHazard(lon, lat, value);
-
             double radiusDeg = MetresToDegrees(radius);
 
-            int radiusStepsX = (int)(radiusDeg / Resolution);
-            int radiusStepsY = (int)(radiusDeg / Resolution);
-            if (radiusStepsX > 0)
+            for (double longitude = circleCentre.Position.Longitude - radiusDeg; 
+                 longitude <= circleCentre.Position.Longitude + radiusDeg;
+                 longitude += Resolution)
             {
-                AddHazard(lon - Resolution, lat, value);
-                AddHazard(lon + Resolution, lat, value);
-            }
-            if (radiusStepsY > 0)
-            {
-                AddHazard(lon, lat - Resolution, value);
-                AddHazard(lon, lat + Resolution, value);
-            }
-            for (int x = 1; x < radiusStepsX; x++)
-                for (int y = 1; y < radiusStepsX; y++)
+                for (double latitude = circleCentre.Position.Latitude - radiusDeg;
+                     latitude <= circleCentre.Position.Latitude + radiusDeg;
+                     latitude += Resolution)
                 {
-                    if (x * x + y * y <= radiusStepsX * radiusStepsY)
-                    {                       
-                        double deltaLon = x * Resolution;
-                        double deltaLat = y * Resolution;
-                        AddHazard(lon - deltaLon, lat - deltaLat, value);
-                        AddHazard(lon - deltaLon, lat + deltaLat, value);
-                        AddHazard(lon + deltaLon, lat - deltaLat, value);
-                        AddHazard(lon + deltaLon, lat + deltaLat, value);
-                    }
+                    double deltaLat = latitude - circleCentre.Position.Latitude;
+                    double deltaLon = longitude - circleCentre.Position.Longitude;
+                    if (deltaLat * deltaLat + deltaLon * deltaLon <= radiusDeg * radiusDeg)
+                        AddHazard(longitude, latitude, value);
                 }
+            }
         }
 
         private double MetresToDegrees(double metres)

@@ -23,13 +23,13 @@ namespace DroneSafetyApi.Data
                         {
                             new Position(0.11, 52.203),
                             new Position(0.12, 52.203),
-                            new Position(0.12, 52.205),
-                            new Position(0.11, 52.205),
+                            new Position(0.12, 52.213),
+                            new Position(0.11, 52.213),
                             new Position(0.11, 52.203)
                         }),
                     StartTime = time,
                     EndTime = time
-                },
+                },/*
                 new PolygonalHazard
                 {
                     DataType = "Car",
@@ -66,7 +66,7 @@ namespace DroneSafetyApi.Data
                     StartTime = time,
                     EndTime = time,
                     Radius = 212
-                },
+                },*/
                 new CircularHazard
                 {
                     DataType = "Bus",
