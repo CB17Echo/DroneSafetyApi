@@ -72,10 +72,8 @@ namespace DroneSafetyApi.Services
             decimal xRem = ((decimal)pos.Longitude) % ((decimal)Resolution);
             decimal yRem = ((decimal)pos.Latitude) % ((decimal)Resolution);
 
-            if (xRem > halfRes)
-                xRem *= -1;
-            if (yRem > halfRes)
-                yRem *= -1;
+            if (xRem > halfRes) { xRem *= -1; }
+            if (yRem > halfRes) { yRem *= -1; }
 
             int dx = (int)((((decimal)pos.Longitude) - xRem) / (decimal) Resolution);
             int dy = (int)((((decimal)pos.Latitude) - yRem) / (decimal) Resolution);
