@@ -1,4 +1,6 @@
 ﻿using DroneSafetyApi.Models;
+using DroneSafetyApi.Services;
+using Microsoft.Azure.Documents.Spatial;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -50,25 +52,80 @@ namespace DroneSafetyApi.UnitTests.ModelsTests
         }
 
         [Theory, MemberData(nameof(CornersExamples))]
-        public void Area_ReturnsTheCorrectBoundingBox(double cornerOneLat, double cornerOneLon, double cornerTwoLat, double cornerTwoLon)
+        public void Area_ReturnsTheCorrectBoundingBox(double cornerOneLon, double cornerOneLat, double cornerTwoLon, double cornerTwoLat)
         {
             // Arrange
             var heatmapsQuery = new HeatmapsQuery
             {
-                CornerOneLat = cornerOneLat,
                 CornerOneLon = cornerOneLon,
-                CornerTwoLat = cornerTwoLat,
-                CornerTwoLon = cornerTwoLon
+                CornerOneLat = cornerOneLat,
+                CornerTwoLon = cornerTwoLon,
+                CornerTwoLat = cornerTwoLat
             };
 
             // Act
             var boundingBox = heatmapsQuery.Area;
 
             // Assert
-            Assert.Equal(Math.Max(cornerOneLat, cornerTwoLat), boundingBox.Max.Latitude);
-            Assert.Equal(Math.Min(cornerOneLat, cornerTwoLat), boundingBox.Min.Latitude);
             Assert.Equal(Math.Max(cornerOneLon, cornerTwoLon), boundingBox.Max.Longitude);
             Assert.Equal(Math.Min(cornerOneLon, cornerTwoLon), boundingBox.Min.Longitude);
+            Assert.Equal(Math.Max(cornerOneLat, cornerTwoLat), boundingBox.Max.Latitude);
+            Assert.Equal(Math.Min(cornerOneLat, cornerTwoLat), boundingBox.Min.Latitude);
+        }
+
+        [Theory, MemberData(nameof(CornersExamples))]
+        public void Centre_ReturnsTheCorrectCentrePoint(double cornerOneLon, double cornerOneLat, double cornerTwoLon, double cornerTwoLat)
+        {
+            // Arrange
+            var heatmapsQuery = new HeatmapsQuery
+            {
+                CornerOneLon = cornerOneLon,
+                CornerOneLat = cornerOneLat,
+                CornerTwoLon = cornerTwoLon,
+                CornerTwoLat = cornerTwoLat
+            };
+            var centralLongitude = Math.Min(cornerOneLon, cornerTwoLon) + Math.Abs(cornerOneLon - cornerTwoLon) / 2;
+            var centralLatitude = Math.Min(cornerOneLat, cornerTwoLat) + Math.Abs(cornerOneLat - cornerTwoLat) / 2;
+
+            // Act
+            var centre = heatmapsQuery.Centre;
+
+            // Assert
+            Assert.Equal(centralLongitude, centre.Position.Longitude);
+            Assert.Equal(centralLatitude, centre.Position.Latitude); 
+        }
+
+        [Theory, MemberData(nameof(CornersExamples))]
+        public void Radius_ReturnsTheDistanceFromCentreToVertex(
+            double cornerOneLon,
+            double cornerOneLat, 
+            double cornerTwoLon,
+            double cornerTwoLat)
+        {
+            // Arrange
+            var heatmapsQuery = new HeatmapsQuery
+            {
+                CornerOneLon = cornerOneLon,
+                CornerOneLat = cornerOneLat,
+                CornerTwoLon = cornerTwoLon,
+                CornerTwoLat = cornerTwoLat
+            };
+            var centre = heatmapsQuery.Centre;
+            var boundingBox = heatmapsQuery.Area;
+            var centreToVertex = PythagoreanDistanceInMetres(centre.Position, boundingBox.Max);
+
+            // Act
+            var radius = heatmapsQuery.Radius;
+
+            // Assert
+            Assert.Equal(centreToVertex, radius);
+        }
+
+        private int PythagoreanDistanceInMetres(Position pointOne, Position pointTwo)
+        {
+            double deltaLongitude = pointOne.Longitude - pointTwo.Longitude;
+            double deltaLatitude = pointOne.Latitude - pointTwo.Longitude;
+            return ((int) Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude)) * HeatMap.MetresInLatDegree;
         }
 
         public static object[] CornersExamples
