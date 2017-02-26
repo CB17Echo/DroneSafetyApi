@@ -10,3 +10,6 @@ install:
 script: 
  - ./scripts/build.sh
  - ./scripts/test.sh
+branches:
+  only:
+    - master
