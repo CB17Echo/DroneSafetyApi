@@ -6,7 +6,7 @@ using Microsoft.Azure.Documents.Spatial;
 namespace DroneSafetyApi.Services
 {
 
-    public class HeatMap
+    public class Heatmap : IHeatmap
     {
         private Dictionary<Position, int> Map;
         private Bounds Area;
@@ -14,7 +14,7 @@ namespace DroneSafetyApi.Services
         
         public const int MetresInLatDegree = 110575;
 
-        public HeatMap(Bounds area, int numberLonPoints)
+        public Heatmap(Bounds area, int numberLonPoints)
         {
             Area = area;
             Resolution = (Area.Max.Longitude - Area.Min.Longitude) / numberLonPoints;
@@ -36,7 +36,7 @@ namespace DroneSafetyApi.Services
             }
         }
 
-        public IEnumerable<HeatmapPoint> GetHeatMapPoints()
+        public IEnumerable<HeatmapPoint> GetHeatmapPoints()
         {
             List<HeatmapPoint> list = new List<HeatmapPoint>();
             foreach(KeyValuePair<Position,int> pair in Map)
