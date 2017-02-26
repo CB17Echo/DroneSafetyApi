@@ -6,10 +6,10 @@ env: DOTNETCORE=1
 dist: trusty
 sudo: required
 install:
- ./scripts/install.sh
+ - ./scripts/install.sh
 script: 
- ./scripts/build.sh
- ./scripts/test.sh
+ - ./scripts/build.sh
+ - ./scripts/test.sh
 branches:
   only:
-    master
+   - master
