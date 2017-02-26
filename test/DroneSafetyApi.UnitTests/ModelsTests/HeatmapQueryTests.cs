@@ -11,11 +11,11 @@ namespace DroneSafetyApi.UnitTests.ModelsTests
 {
     public class HeatmapsQueryTests
     {
-        [Theory, MemberData(nameof(ModelValidationExamples_HeigthWidthRange))]
-        public void ModelIsInvalid_WhenHeightOrWidthIsNonPositive(int height, int width, bool isValid)
+        [Theory, MemberData(nameof(ModelValidationExamples_NumberLonPointsRange))]
+        public void ModelIsInvalid_WhenHeightOrWidthIsNonPositive(int numberLonPoints, bool isValid)
         {
             // Arrange
-            var heatmapsQuery = new HeatmapsQuery { Height = height, Width = width };
+            var heatmapsQuery = new HeatmapsQuery { NumberLonPoints = numberLonPoints };
             var validationContext = new ValidationContext(heatmapsQuery, null, null);
             var results = new List<ValidationResult>();
 
@@ -33,20 +33,18 @@ namespace DroneSafetyApi.UnitTests.ModelsTests
             }
         }
 
-        public static object[] ModelValidationExamples_HeigthWidthRange
+        public static object[] ModelValidationExamples_NumberLonPointsRange
         {
             get
             {
                 return new[]
                 {
-                    new object[] { 10, 4, true },
-                    new object[] { 200, 1, true },
-                    new object[] { 0, 10000, false },
-                    new object[] { -5, 20000, false },
-                    new object[] { 5, 0, false },
-                    new object[] { 2000, -5, false },
-                    new object[] { 0, 0, false },
-                    new object[] { -5, -20, false }
+                    new object[] { 10, true },
+                    new object[] { 20000, true },
+                    new object[] { 0, false },
+                    new object[] { -5, false },
+                    new object[] { -300, false },
+                    new object[] { 1, true },
                 };
             }
         }

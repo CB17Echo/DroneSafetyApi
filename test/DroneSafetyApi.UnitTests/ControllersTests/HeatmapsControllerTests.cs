@@ -21,7 +21,7 @@ namespace DroneSafetyApi.UnitTests.ControllersTests
             var mockHazardRespository = new Mock<IHazardRepository>();
             var mockHazardsToHeatmapsResponse = new Mock<IHazardsToHeatmapsResponse>();
             var controller = new HeatmapsController(mockHazardRespository.Object, mockHazardsToHeatmapsResponse.Object);
-            controller.ModelState.AddModelError("Width", "Witdh must be a positive Integer");
+            controller.ModelState.AddModelError("NumberLonPoints", "NumberLonPoints must be a positive Integer");
             var heatmapsQuery = new HeatmapsQuery();
 
             // Act
@@ -61,7 +61,6 @@ namespace DroneSafetyApi.UnitTests.ControllersTests
             mockHazardsToHeatmapsResponse
                  .Setup(heatmapsResponseStrategy => heatmapsResponseStrategy.ConvertToHeatmapResponse(
                      It.IsAny<Bounds>(),
-                     It.IsAny<int>(),
                      It.IsAny<int>(),
                      It.IsAny<IEnumerable<Hazard>>()))
                  .Returns(exampleHeatmapsResponse)

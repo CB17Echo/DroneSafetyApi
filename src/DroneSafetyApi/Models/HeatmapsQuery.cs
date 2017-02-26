@@ -11,10 +11,8 @@ namespace DroneSafetyApi.Models
         public double CornerOneLat { get; set; }
         public double CornerTwoLon { get; set; }
         public double CornerTwoLat { get; set; }
-        [Range(1, int.MaxValue, ErrorMessage = "Width must be a positive integer")]
-        public int Width { get; set; }
-        [Range(1, int.MaxValue, ErrorMessage = "Height must be a positive integer")]
-        public int Height { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "The number of longitude points must be a positive integer")]
+        public int NumberLonPoints { get; set; }
         public DateTime Time { get; set; }
 
         private Position CornerOne

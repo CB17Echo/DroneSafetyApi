@@ -9,25 +9,15 @@ namespace DroneSafetyApi.Services
     public class HeatMap
     {
         private Dictionary<Position, int> Map;
-        private double MinLon;
-        private double MinLat;
-        private double MaxLon;
-        private double MaxLat;
-
+        private Bounds Area;
         private double Resolution;
         
-
-
         public const int MetresInLatDegree = 110575;
 
-        public HeatMap(double minX, double maxX, double minY, double maxY, int NumberLonPoints)
+        public HeatMap(Bounds area, int numberLonPoints)
         {
-            MinLon = minX;
-            MinLat = minY;
-            MaxLon = maxX;
-            MaxLat = maxY;
-
-            Resolution = (MaxLon - MinLon) / NumberLonPoints;
+            Area = area;
+            Resolution = (Area.Max.Longitude - Area.Min.Longitude) / numberLonPoints;
 
             Map = new Dictionary<Position, int>();
             
@@ -35,11 +25,8 @@ namespace DroneSafetyApi.Services
 
         private void AddHazard(double x, double y, int v)
         {
-            if(x < MinLon || x > MaxLon || y < MinLat || y > MaxLat) { return; }
-
+            if (x < Area.Min.Longitude || x > Area.Max.Longitude || y < Area.Min.Latitude || y > Area.Max.Latitude) { return; }
             Position pos = GetNearestPosition(new Position(x, y));
-
-
             if (Map.ContainsKey(pos))
             {
                 Map[pos] += v;
@@ -127,10 +114,10 @@ namespace DroneSafetyApi.Services
                 if (coord[i].Longitude < minLong) { minLong = coord[i].Longitude; }
                 else if (coord[i].Longitude > maxLong) { maxLong = coord[i].Longitude; }
             }
-            if (minLong < MinLon) { minLong = MinLon; }
-            if (maxLong > MaxLon) { maxLong = MaxLon; }
-            if (minLat < MinLat) { minLat = MinLat; }
-            if (maxLat > MaxLat) { maxLat = MaxLat; }
+            if (minLong < Area.Min.Longitude) { minLong = Area.Min.Longitude; }
+            if (maxLong > Area.Max.Longitude) { maxLong = Area.Max.Longitude; }
+            if (minLat < Area.Min.Latitude) { minLat = Area.Min.Latitude; }
+            if (maxLat > Area.Max.Latitude) { maxLat = Area.Max.Latitude; }
 
             // Calculate grid elements to go through
             Position start = GetNearestPosition(new Position(minLong, minLat));
