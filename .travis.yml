@@ -1,0 +1,8 @@
+language: csharp
+solution: DroneSafetyApi.sln
+dotnet: 1.0.0-preview2-003131
+mono: none
+env: DOTNETCORE=1
+dist: trusty
+sudo: required
+script: ./build.sh
