@@ -8,7 +8,7 @@ namespace DroneSafetyApi.Services
 
     public class HeatMap
     {
-        public Dictionary<Position, int> Map;
+        private Dictionary<Position, int> Map;
         private Bounds Area;
         private double Resolution;
         
