@@ -1,9 +1,5 @@
 ﻿language: csharp
 sudo: required
 dist: trusty
-mono: now
+mono: none
 dotnet: 1.0.0-preview2-003131
-before_script:
- - chmod a+x ./build.sh
-script:
- - ./build.sh
