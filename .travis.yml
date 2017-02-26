@@ -5,3 +5,4 @@ mono: none
 env: DOTNETCORE=1
 dist: trusty
 sudo: required
+script: ./build.sh
