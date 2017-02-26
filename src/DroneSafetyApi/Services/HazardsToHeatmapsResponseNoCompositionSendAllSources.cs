@@ -6,6 +6,12 @@ namespace DroneSafetyApi.Services
 {
     public abstract class HazardsToHeatmapsResponseNoCompositionSendAllSources : IHazardsToHeatmapsResponse
     {
+        public IHeatmapFactory HeatmapFactory { get; set; }
+        public HazardsToHeatmapsResponseNoCompositionSendAllSources(IHeatmapFactory heatmapFactory)
+        {
+            HeatmapFactory = heatmapFactory;
+        }
+
         public HeatmapsResponse ConvertToHeatmapResponse(Bounds area, int numberLonPoints, IEnumerable<Hazard> hazards)
         {
             Dictionary<string, List<Hazard>> hazardsBySource = new Dictionary<string, List<Hazard>>();
@@ -24,7 +30,7 @@ namespace DroneSafetyApi.Services
             Dictionary<string, IEnumerable<HeatmapPoint>> heatmaps = new Dictionary<string, IEnumerable<HeatmapPoint>>();
             foreach (KeyValuePair<string, List<Hazard>> pair in hazardsBySource)
             {
-                heatmaps.Add(pair.Key, ConvertToHeatmap(area, numberLonPoints, pair.Value).GetHeatMapPoints());
+                heatmaps.Add(pair.Key, ConvertToHeatmap(area, numberLonPoints, pair.Value).GetHeatmapPoints());
             }
 
             return new HeatmapsResponse
@@ -35,6 +41,6 @@ namespace DroneSafetyApi.Services
             };
         }
 
-        public abstract HeatMap ConvertToHeatmap(Bounds area, int numberLonPoints, IEnumerable<Hazard> hazards);
+        public abstract IHeatmap ConvertToHeatmap(Bounds area, int numberLonPoints, IEnumerable<Hazard> hazards);
     }
 }
