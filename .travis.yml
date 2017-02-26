@@ -1,4 +1,5 @@
 ﻿language: csharp
+solution: DroneSafetyApi.sln
 sudo: required
 dist: trusty
 mono: none
