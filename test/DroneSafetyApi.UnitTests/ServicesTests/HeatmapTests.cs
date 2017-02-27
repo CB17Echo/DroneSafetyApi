@@ -14,10 +14,10 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
         public void ListisEmpty_WhenNewHeatmapIsCreated(Bounds area, int numberLonPoints)
         {
             // Arrange
-            var heatmap = new HeatMap(area, numberLonPoints);
+            var heatmap = new Heatmap(area, numberLonPoints);
 
             // Act
-            var heatmapPointList = heatmap.GetHeatMapPoints();
+            var heatmapPointList = heatmap.GetHeatmapPoints();
 
             // Assert
             Assert.Empty(heatmapPointList);
@@ -42,11 +42,11 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             Point point, int severity, Position position, int count, bool isValid)
         {
             // Arrange
-            var heatmap = new HeatMap(area, numberLonPoints);
+            var heatmap = new Heatmap(area, numberLonPoints);
 
             // Act
             heatmap.ProcessPoint(point, severity);
-            var points = heatmap.GetHeatMapPoints();
+            var points = heatmap.GetHeatmapPoints();
             var heatmapPoint = points.FirstOrDefault(x => x.X == position.Longitude &&
                 x.Y == position.Latitude && x.Value == severity);
             var pointCount = IEnumCount(points);
@@ -87,11 +87,11 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             Point circleCentre, int radius, int severity, Position[] positions, bool isValid)
         {
             // Arrange
-            var heatmap = new HeatMap(area, numberLonPoints);
+            var heatmap = new Heatmap(area, numberLonPoints);
             
             // Act
             heatmap.ProcessCircle(circleCentre, radius, severity);
-            var points = heatmap.GetHeatMapPoints();
+            var points = heatmap.GetHeatmapPoints();
             var pointCount = IEnumCount(points);
             var resolution = (area.Max.Longitude - area.Min.Longitude) / numberLonPoints;
             var numberLatPoints = (int)((area.Max.Latitude - area.Min.Latitude) / resolution);
@@ -141,11 +141,11 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
                 return new[]
                 {
 
-                    new object[] { area1, 100, new Point(5,5), 3 * HeatMap.MetresInLatDegree, 1,
+                    new object[] { area1, 100, new Point(5,5), 3 * Heatmap.MetresInLatDegree, 1,
                         new Position[] { new Position(5,5), new Position(4.5,4.5), new Position(7,7) }, true },
-                    new object[] { area1, 100, new Point(5,5), 3 * HeatMap.MetresInLatDegree, 1,
+                    new object[] { area1, 100, new Point(5,5), 3 * Heatmap.MetresInLatDegree, 1,
                         new Position[] { new Position(1,2), new Position(5,9), new Position(8.01,8.01) }, false },
-                    new object[] { area1, 100, new Point(5,5), 3 * HeatMap.MetresInLatDegree, 1,
+                    new object[] { area1, 100, new Point(5,5), 3 * Heatmap.MetresInLatDegree, 1,
                         new Position[] { new Position(5.01, 5.01), new Position(4.49,4.49) }, false },
                     new object[] { area2, 500, new Point(0.12, 52.203), 600, 1, goodPositions, true },
                     new object[] { area2, 500, new Point(0.12, 52.203), 600, 1, badPositions, false },
@@ -158,11 +158,11 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             Polygon polygon, int severity, Position[] positions, bool isValid)
         {
             // Arrange
-            var heatmap = new HeatMap(area, numberLonPoints);
+            var heatmap = new Heatmap(area, numberLonPoints);
 
             // Act
             heatmap.ProcessPolygon(polygon, severity);
-            var points = heatmap.GetHeatMapPoints();
+            var points = heatmap.GetHeatmapPoints();
             var pointCount = IEnumCount(points);
             var maxArea = MaxPolygonArea(polygon);
             var boundsArea = (area.Max.Longitude - area.Min.Longitude) * (area.Max.Latitude - area.Min.Latitude);
