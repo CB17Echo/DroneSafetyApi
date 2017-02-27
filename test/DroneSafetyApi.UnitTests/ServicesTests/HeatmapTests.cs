@@ -40,13 +40,24 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             Assert.Equal(numPoints, IEnumCount(heatmapPoints));
             if (heatmapShouldContainSpecifiedPoint)
             {
-                Assert.Contains(heatmapPoints, heatmapPoint =>
-                    (heatmapPoint.X == position.Longitude)
-                    && (heatmapPoint.Y == position.Latitude)
-                    && (heatmapPoint.Value == severity));
-                Assert.Equal(1, IEnumCount(heatmapPoints));
+                Assert.Contains(heatmapPoints, EquivalentToPositionAndSeverity(position, severity));
+            }
+            else
+            {
+                Assert.DoesNotContain(heatmapPoints, EquivalentToPositionAndSeverity(position, severity));
             }
         }
+
+        private Predicate<HeatmapPoint> EquivalentToPositionAndSeverity(Position position, int severity)
+        {
+            return heatmapPoint =>
+            {
+                return (heatmapPoint.X == position.Longitude)
+                    && (heatmapPoint.Y == position.Latitude)
+                    && (heatmapPoint.Value == severity);
+            };
+        }
+
         public static object[] PointExamples
         {
             get
@@ -88,20 +99,14 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             {
                 foreach (Position position in positions)
                 {
-                    Assert.Contains(heatmapPoints, heatmapPoint =>
-                        (heatmapPoint.X == position.Longitude)
-                        && (heatmapPoint.Y == position.Latitude)
-                        && (heatmapPoint.Value == severity));
+                    Assert.Contains(heatmapPoints, EquivalentToPositionAndSeverity(position, severity));
                 }
             }
             else
             {
                 foreach (Position position in positions)
                 {
-                    Assert.DoesNotContain(heatmapPoints, heatmapPoint =>
-                        (heatmapPoint.X == position.Longitude)
-                        && (heatmapPoint.Y == position.Latitude)
-                        && (heatmapPoint.Value == severity));
+                    Assert.DoesNotContain(heatmapPoints, EquivalentToPositionAndSeverity(position, severity));
                 }
             }
         }
@@ -162,20 +167,14 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             {
                 foreach (Position position in positions)
                 {
-                    Assert.Contains(heatmapPoints, heatmapPoint =>
-                        (heatmapPoint.X == position.Longitude)
-                        && (heatmapPoint.Y == position.Latitude)
-                        && (heatmapPoint.Value == severity));
+                    Assert.Contains(heatmapPoints, EquivalentToPositionAndSeverity(position, severity));
                 }
             }
             else
             {
                 foreach (Position position in positions)
                 {
-                    Assert.DoesNotContain(heatmapPoints, heatmapPoint =>
-                        (heatmapPoint.X == position.Longitude)
-                        && (heatmapPoint.Y == position.Latitude)
-                        && (heatmapPoint.Value == severity));
+                    Assert.DoesNotContain(heatmapPoints, EquivalentToPositionAndSeverity(position, severity));
                 }
             }
         }
