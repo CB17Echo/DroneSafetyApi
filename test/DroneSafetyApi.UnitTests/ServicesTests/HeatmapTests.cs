@@ -3,9 +3,7 @@ using DroneSafetyApi.Services;
 using Microsoft.Azure.Documents.Spatial;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Xunit;
-using Xunit.Extensions;
 using System.Linq;
 
 namespace DroneSafetyApi.UnitTests.ServicesTests
@@ -41,7 +39,7 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
 
         [Theory, MemberData(nameof(PointExamples))]
         public void ProcessPoint_CorrectlyInsertsPointsIntoHeatMap(Bounds area, int numberLonPoints,
-            Point point, int severity, Position position, bool isValid)
+            Point point, int severity, Position position, int count, bool isValid)
         {
             // Arrange
             var heatmap = new HeatMap(area, numberLonPoints);
@@ -51,6 +49,7 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             var points = heatmap.GetHeatMapPoints();
             var heatmapPoint = points.FirstOrDefault(x => x.X == position.Longitude &&
                 x.Y == position.Latitude && x.Value == severity);
+            var pointCount = IEnumCount(points);
 
             // Assert
             if (isValid)
@@ -61,6 +60,7 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             {
                 Assert.Null(heatmapPoint);
             }
+            Assert.Equal(count, pointCount);
         }
         public static object[] PointExamples
         {
@@ -71,13 +71,13 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
                 return new[]
                 {
 
-                    new object[] { area1, 100, new Point(5,5), 1, new Position(5,5), true },
-                    new object[] { area1, 100, new Point(5,5), 1, new Position(6,5), false },
-                    new object[] { area1, 100, new Point(-1,11), 1, new Position(-1,11), false },
-                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.1,7.9), true },
-                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.11,7.87), false },
-                    new object[] { area2, 500, new Point(0.09, 52.21), 1, new Position(0.090046691894531253, 52.209983825683594), true },
-                    new object[] { area2, 500, new Point(0.09, 52.21), 1, new Position(0.09, 52.21), false },
+                    new object[] { area1, 100, new Point(5,5), 1, new Position(5,5), 1, true },
+                    new object[] { area1, 100, new Point(5,5), 1, new Position(6,5), 1, false },
+                    new object[] { area1, 100, new Point(-1,11), 1, new Position(-1,11), 0, false },
+                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.1,7.9), 1, true },
+                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.11,7.87), 1, false },
+                    new object[] { area2, 500, new Point(0.09, 52.21), 1, new Position(0.090046691894531253, 52.209983825683594), 1, true },
+                    new object[] { area2, 500, new Point(0.09, 52.21), 1, new Position(0.09, 52.21), 1, false },
                 };
             }
         }
@@ -92,8 +92,14 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             // Act
             heatmap.ProcessCircle(circleCentre, radius, severity);
             var points = heatmap.GetHeatMapPoints();
-
+            var pointCount = IEnumCount(points);
+            var resolution = (area.Max.Longitude - area.Min.Longitude) / numberLonPoints;
+            var numberLatPoints = (int)((area.Max.Latitude - area.Min.Latitude) / resolution);
+            var idealPointNum = (int)((Math.PI * radius * radius) * (numberLonPoints * numberLatPoints));
+            var errorRange = (int)(idealPointNum * 0.001);
+            
             // Assert
+            Assert.InRange(pointCount, idealPointNum - errorRange, idealPointNum + errorRange);
             if (isValid)
             {
                 foreach (Position position in positions)
@@ -157,8 +163,15 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             // Act
             heatmap.ProcessPolygon(polygon, severity);
             var points = heatmap.GetHeatMapPoints();
+            var pointCount = IEnumCount(points);
+            var maxArea = MaxPolygonArea(polygon);
+            var boundsArea = (area.Max.Longitude - area.Min.Longitude) * (area.Max.Latitude - area.Min.Latitude);
+            var resolution = (area.Max.Longitude - area.Min.Longitude) / numberLonPoints;
+            var numberLatPoints = (int)((area.Max.Latitude - area.Min.Latitude) / resolution);
+            var maxPointNum = maxArea / boundsArea * numberLonPoints * numberLonPoints;
 
             // Assert
+            Assert.InRange(pointCount, 0, maxPointNum);
             if (isValid)
             {
                 foreach (Position position in positions)
@@ -183,6 +196,15 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             {
                 Bounds area1 = new Bounds(new Position(0, 0), new Position(10, 10));
                 Bounds area2 = new Bounds(new Position(0.0707244873046875, 52.170983918129096), new Position(0.1847076416015625, 52.230743427331866));
+                Polygon poly = new Polygon(new[]
+                {
+                    new Position(2,2),
+                    new Position(4, 2),
+                    new Position(4,4),
+                    new Position(3,5),
+                    new Position(2,4),
+                    new Position(2,2)
+                });
                 Polygon poly1 = new Polygon(new[]
                 {
                     new Position(0.11, 52.203),
@@ -244,6 +266,7 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
                 };
                 return new[]
                 {
+                    new object[] {area1, 100, poly, 1, new Position[] { }, true },
                     new object[] { area2, 500, poly1, 1, goodPoly1Positions, true },
                     new object[] { area2, 500, poly1, 1, badPoly1Positions, false },
                     new object[] { area2, 500, poly2, 1, goodPoly2Positions1, true },
@@ -252,6 +275,33 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
                     new object[] { area2, 100, poly2, 1, badPoly2Positions2, false },
                 };
             }
+        }
+
+        private int IEnumCount<T>(IEnumerable<T> collection)
+        {
+            int count = 0;
+            foreach(T item in collection)
+            {
+                count++;
+            }
+            return count;
+        }
+
+        private double MaxPolygonArea(Polygon polygon)
+        {
+            IList<Position> coord = polygon.Rings[0].Positions;
+            double minLong = coord[0].Longitude;
+            double maxLong = coord[0].Longitude;
+            double minLat = coord[0].Latitude;
+            double maxLat = coord[0].Latitude;
+            for (int i = 1; i < coord.Count - 1; i++)
+            {
+                if (coord[i].Latitude < minLat) { minLat = coord[i].Latitude; }
+                else if (coord[i].Latitude > maxLat) { maxLat = coord[i].Latitude; }
+                if (coord[i].Longitude < minLong) { minLong = coord[i].Longitude; }
+                else if (coord[i].Longitude > maxLong) { maxLong = coord[i].Longitude; }
+            }
+            return (maxLong - minLong) * (maxLat - minLat);
         }
     }
 }
