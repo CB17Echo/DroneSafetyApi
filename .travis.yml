@@ -13,7 +13,7 @@ script:
 branches:
   only:
    - master
-depoly:
+deploy:
   provider: azure_web_apps
   verbose: true
   on: master
