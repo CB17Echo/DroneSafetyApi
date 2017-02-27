@@ -16,5 +16,4 @@ branches:
 depoly:
   provider: azure_web_apps
   verbose: true
-  on:
-    branch: master
+  on: master
