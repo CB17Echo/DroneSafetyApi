@@ -27,7 +27,7 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
 
         [Theory, MemberData(nameof(PointExamples))]
         public void ProcessPoint_CorrectlyInsertsPointsIntoHeatMap(Bounds area, int numberLonPoints,
-            Point point, int severity, Position position, bool shouldHavePoints)
+            Point point, int severity, Position position, int numPoints, bool heatmapShouldContainSpecifiedPoint)
         {
             // Arrange
             var heatmap = new Heatmap(area, numberLonPoints);
@@ -37,17 +37,14 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
             var heatmapPoints = heatmap.GetHeatmapPoints();
 
             // Assert
-            if (shouldHavePoints)
+            Assert.Equal(numPoints, IEnumCount(heatmapPoints));
+            if (heatmapShouldContainSpecifiedPoint)
             {
                 Assert.Contains(heatmapPoints, heatmapPoint =>
                     (heatmapPoint.X == position.Longitude)
                     && (heatmapPoint.Y == position.Latitude)
                     && (heatmapPoint.Value == severity));
                 Assert.Equal(1, IEnumCount(heatmapPoints));
-            }
-            else
-            {
-                Assert.Empty(heatmapPoints);
             }
         }
         public static object[] PointExamples
@@ -59,50 +56,52 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
                 return new[]
                 {
 
-                    new object[] { area1, 100, new Point(5,5), 1, new Position(5,5), true },
-                    new object[] { area1, 100, new Point(5,5), 10, new Position(6,5), false },
-                    new object[] { area1, 100, new Point(-1,11), 1, new Position(-1,11), false },
-                    new object[] { area1, 100, new Point(2.11,7.87), 42, new Position(2.1,7.9), true },
-                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.11,7.87), false },
-                    new object[] { area2, 500, new Point(0.09, 52.21), 1000, new Position(0.090046691894531253, 52.209983825683594), true },
-                    new object[] { area2, 500, new Point(0.09, 52.21), 12, new Position(0.09, 52.21), false },
+                    new object[] { area1, 100, new Point(5,5), 1, new Position(5,5), 1, true },
+                    new object[] { area1, 100, new Point(5,5), 10, new Position(6,5), 1, false },
+                    new object[] { area1, 100, new Point(-1,11), 1, new Position(-1,11), 0, false },
+                    new object[] { area1, 100, new Point(2.11,7.87), 42, new Position(2.1,7.9), 1, true },
+                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.11,7.87), 1, false },
+                    new object[] { area2, 500, new Point(0.09, 52.21), 1000, new Position(0.090046691894531253, 52.209983825683594), 1, true },
+                    new object[] { area2, 500, new Point(0.09, 52.21), 12, new Position(0.09, 52.21), 1, false },
                 };
             }
         }
         
         [Theory, MemberData(nameof(CircleExamples))]
         public void ProcessCircle_CorrectlyInsertsCirclesIntoHeatMap(Bounds area, int numberLonPoints,
-            Point circleCentre, int radius, int severity, Position[] positions, bool isValid)
+            Point circleCentre, int radius, int severity, Position[] positions, bool heatmapShouldContainSpecifiedPoints)
         {
             // Arrange
             var heatmap = new Heatmap(area, numberLonPoints);
-            
-            // Act
-            heatmap.ProcessCircle(circleCentre, radius, severity);
-            var points = heatmap.GetHeatmapPoints();
-            var pointCount = IEnumCount(points);
             var resolution = (area.Max.Longitude - area.Min.Longitude) / numberLonPoints;
             var numberLatPoints = (int)((area.Max.Latitude - area.Min.Latitude) / resolution);
             var idealPointNum = (int)((Math.PI * radius * radius) * (numberLonPoints * numberLatPoints));
             var errorRange = (int)(idealPointNum * 0.001);
+
+            // Act
+            heatmap.ProcessCircle(circleCentre, radius, severity);
+            var heatmapPoints = heatmap.GetHeatmapPoints();
             
             // Assert
-            Assert.InRange(pointCount, idealPointNum - errorRange, idealPointNum + errorRange);
-            if (isValid)
+            Assert.InRange(IEnumCount(heatmapPoints), idealPointNum - errorRange, idealPointNum + errorRange);
+            if (heatmapShouldContainSpecifiedPoints)
             {
                 foreach (Position position in positions)
                 {
-                    var heatmapPoint = points.FirstOrDefault(x => x.X == position.Longitude &&
-                        x.Y == position.Latitude && x.Value == severity);
-                    Assert.NotNull(heatmapPoint);
+                    Assert.Contains(heatmapPoints, heatmapPoint =>
+                        (heatmapPoint.X == position.Longitude)
+                        && (heatmapPoint.Y == position.Latitude)
+                        && (heatmapPoint.Value == severity));
                 }
-            } else
+            }
+            else
             {
                 foreach (Position position in positions)
                 {
-                    var heatmapPoint = points.FirstOrDefault(x => x.X == position.Longitude &&
-                        x.Y == position.Latitude && x.Value == severity);
-                    Assert.Null(heatmapPoint);
+                    Assert.DoesNotContain(heatmapPoints, heatmapPoint =>
+                        (heatmapPoint.X == position.Longitude)
+                        && (heatmapPoint.Y == position.Latitude)
+                        && (heatmapPoint.Value == severity));
                 }
             }
         }
@@ -143,38 +142,40 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
         
         [Theory, MemberData(nameof(PolygonExamples))]
         public void ProcessPolygon_CorrectlyInsertsPolygonsIntoHeatMap(Bounds area, int numberLonPoints,
-            Polygon polygon, int severity, Position[] positions, bool isValid)
+            Polygon polygon, int severity, Position[] positions, bool heatmapShouldContainSpecifiedPoints)
         {
             // Arrange
             var heatmap = new Heatmap(area, numberLonPoints);
-
-            // Act
-            heatmap.ProcessPolygon(polygon, severity);
-            var points = heatmap.GetHeatmapPoints();
-            var pointCount = IEnumCount(points);
             var maxArea = MaxPolygonArea(polygon);
             var boundsArea = (area.Max.Longitude - area.Min.Longitude) * (area.Max.Latitude - area.Min.Latitude);
             var resolution = (area.Max.Longitude - area.Min.Longitude) / numberLonPoints;
             var numberLatPoints = (int)((area.Max.Latitude - area.Min.Latitude) / resolution);
             var maxPointNum = maxArea / boundsArea * numberLonPoints * numberLonPoints;
 
+            // Act
+            heatmap.ProcessPolygon(polygon, severity);
+            var heatmapPoints = heatmap.GetHeatmapPoints();
+
             // Assert
-            Assert.InRange(pointCount, 0, maxPointNum);
-            if (isValid)
+            Assert.InRange(IEnumCount(heatmapPoints), 0, maxPointNum);
+            if (heatmapShouldContainSpecifiedPoints)
             {
                 foreach (Position position in positions)
                 {
-                    var heatmapPoint = points.FirstOrDefault(x => x.X == position.Longitude &&
-                        x.Y == position.Latitude && x.Value == severity);
-                    Assert.NotNull(heatmapPoint);
+                    Assert.Contains(heatmapPoints, heatmapPoint =>
+                        (heatmapPoint.X == position.Longitude)
+                        && (heatmapPoint.Y == position.Latitude)
+                        && (heatmapPoint.Value == severity));
                 }
-            } else
+            }
+            else
             {
                 foreach (Position position in positions)
                 {
-                    var heatmapPoint = points.FirstOrDefault(x => x.X == position.Longitude &&
-                        x.Y == position.Latitude && x.Value == severity);
-                    Assert.Null(heatmapPoint);
+                    Assert.DoesNotContain(heatmapPoints, heatmapPoint =>
+                        (heatmapPoint.X == position.Longitude)
+                        && (heatmapPoint.Y == position.Latitude)
+                        && (heatmapPoint.Value == severity));
                 }
             }
         }
