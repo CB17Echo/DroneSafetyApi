@@ -13,3 +13,7 @@ script:
 branches:
   only:
    - master
+depoly:
+  provider: azure_web_apps
+  on:
+    branch: master
