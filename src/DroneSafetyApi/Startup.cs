@@ -51,11 +51,11 @@ namespace DroneSafetyApi
 
             services.AddMvc();
 
-            services.AddSingleton<IHazardRepository, ExampleHazardRepository>();
-            services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
             //services.Configure<DbOptions>(Configuration.GetSection("DocumentDB"));
             //services.AddSingleton<IHazardRepository, HazardDatabase>();
-            //services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
+            services.AddSingleton<IHazardRepository, ExampleHazardRepository>();
+            services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
+            services.AddSingleton<IHeatmapFactory, HeatmapFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

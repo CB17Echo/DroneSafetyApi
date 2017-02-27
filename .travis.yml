@@ -5,4 +5,11 @@ mono: none
 env: DOTNETCORE=1
 dist: trusty
 sudo: required
-script: ./build.sh
+install:
+ - ./scripts/install.sh
+script: 
+ - ./scripts/build.sh
+ - ./scripts/test.sh
+branches:
+  only:
+   - master
