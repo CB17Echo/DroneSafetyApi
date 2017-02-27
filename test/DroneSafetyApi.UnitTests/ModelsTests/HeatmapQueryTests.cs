@@ -44,7 +44,7 @@ namespace DroneSafetyApi.UnitTests.ModelsTests
                     new object[] { 0, false },
                     new object[] { -5, false },
                     new object[] { -300, false },
-                    new object[] { 1, true },
+                    new object[] { 1, true }
                 };
             }
         }
