@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 using System.Linq;
+using Moq;
 
 namespace DroneSafetyApi.UnitTests.ServicesTests
 {
@@ -14,45 +15,40 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
         public void ListisEmpty_WhenNewHeatmapIsCreated()
         {
             // Arrange
-            var area1 = new Bounds(new Position(0, 0), new Position(1, 1));
-            var area2 = new Bounds(new Position(-3.4, 0.0012), new Position(4.23, 0.0021));
-
-            var heatmap1 = new Heatmap(area1, 10);
-            var heatmap2 = new Heatmap(area2, 200);
+            var area = new Bounds(new Position(0, 0), new Position(1, 1));
+            var heatmap = new Heatmap(area, It.IsAny<int>());
 
             // Act
-            var heatmapPointList1 = heatmap1.GetHeatmapPoints();
-            var heatmapPointList2 = heatmap2.GetHeatmapPoints();
+            var heatmapPoints = heatmap.GetHeatmapPoints();
 
             // Assert
-            Assert.Empty(heatmapPointList1);
-            Assert.Empty(heatmapPointList2);
+            Assert.Empty(heatmapPoints);
         }
 
         [Theory, MemberData(nameof(PointExamples))]
         public void ProcessPoint_CorrectlyInsertsPointsIntoHeatMap(Bounds area, int numberLonPoints,
-            Point point, int severity, Position position, int count, bool isValid)
+            Point point, int severity, Position position, bool shouldHavePoints)
         {
             // Arrange
             var heatmap = new Heatmap(area, numberLonPoints);
 
             // Act
             heatmap.ProcessPoint(point, severity);
-            var points = heatmap.GetHeatmapPoints();
-            var heatmapPoint = points.FirstOrDefault(x => x.X == position.Longitude &&
-                x.Y == position.Latitude && x.Value == severity);
-            var pointCount = IEnumCount(points);
+            var heatmapPoints = heatmap.GetHeatmapPoints();
 
             // Assert
-            if (isValid)
+            if (shouldHavePoints)
             {
-                Assert.NotNull(heatmapPoint);
+                Assert.Contains(heatmapPoints, heatmapPoint =>
+                    (heatmapPoint.X == position.Longitude)
+                    && (heatmapPoint.Y == position.Latitude)
+                    && (heatmapPoint.Value == severity));
+                Assert.Equal(1, IEnumCount(heatmapPoints));
             }
             else
             {
-                Assert.Null(heatmapPoint);
+                Assert.Empty(heatmapPoints);
             }
-            Assert.Equal(count, pointCount);
         }
         public static object[] PointExamples
         {
@@ -63,13 +59,13 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
                 return new[]
                 {
 
-                    new object[] { area1, 100, new Point(5,5), 1, new Position(5,5), 1, true },
-                    new object[] { area1, 100, new Point(5,5), 1, new Position(6,5), 1, false },
-                    new object[] { area1, 100, new Point(-1,11), 1, new Position(-1,11), 0, false },
-                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.1,7.9), 1, true },
-                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.11,7.87), 1, false },
-                    new object[] { area2, 500, new Point(0.09, 52.21), 1, new Position(0.090046691894531253, 52.209983825683594), 1, true },
-                    new object[] { area2, 500, new Point(0.09, 52.21), 1, new Position(0.09, 52.21), 1, false },
+                    new object[] { area1, 100, new Point(5,5), 1, new Position(5,5), true },
+                    new object[] { area1, 100, new Point(5,5), 10, new Position(6,5), false },
+                    new object[] { area1, 100, new Point(-1,11), 1, new Position(-1,11), false },
+                    new object[] { area1, 100, new Point(2.11,7.87), 42, new Position(2.1,7.9), true },
+                    new object[] { area1, 100, new Point(2.11,7.87), 1, new Position(2.11,7.87), false },
+                    new object[] { area2, 500, new Point(0.09, 52.21), 1000, new Position(0.090046691894531253, 52.209983825683594), true },
+                    new object[] { area2, 500, new Point(0.09, 52.21), 12, new Position(0.09, 52.21), false },
                 };
             }
         }
