@@ -10,31 +10,23 @@ namespace DroneSafetyApi.UnitTests.ServicesTests
 {
     public class HeatmapTests
     {
-        [Theory, MemberData(nameof(ServiceValidationExamples_HeatmapExamples))]
-        public void ListisEmpty_WhenNewHeatmapIsCreated(Bounds area, int numberLonPoints)
+        [Fact]
+        public void ListisEmpty_WhenNewHeatmapIsCreated()
         {
             // Arrange
-            var heatmap = new Heatmap(area, numberLonPoints);
+            var area1 = new Bounds(new Position(0, 0), new Position(1, 1));
+            var area2 = new Bounds(new Position(-3.4, 0.0012), new Position(4.23, 0.0021));
+
+            var heatmap1 = new Heatmap(area1, 10);
+            var heatmap2 = new Heatmap(area2, 200);
 
             // Act
-            var heatmapPointList = heatmap.GetHeatmapPoints();
+            var heatmapPointList1 = heatmap1.GetHeatmapPoints();
+            var heatmapPointList2 = heatmap2.GetHeatmapPoints();
 
             // Assert
-            Assert.Empty(heatmapPointList);
-        }
-
-        public static object[] ServiceValidationExamples_HeatmapExamples
-        {
-            get
-            {
-                Bounds area1 = new Bounds(new Position(0, 0), new Position(1, 1));
-                Bounds area2 = new Bounds(new Position(-3.4, 0.0012), new Position(4.23, 0.0021));
-                return new[]
-                {
-                    new object[] { area1, 10 },
-                    new object[] { area2, 200 },
-                };
-            }
+            Assert.Empty(heatmapPointList1);
+            Assert.Empty(heatmapPointList2);
         }
 
         [Theory, MemberData(nameof(PointExamples))]
