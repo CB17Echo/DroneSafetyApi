@@ -5,15 +5,25 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Services
 {
-
+    /// <summary>
+    /// The Heatmap class is a service used to calculate the points of <see cref="Hazard"/>s on a heatmap
+    /// </summary>
     public class Heatmap : IHeatmap
     {
         private Dictionary<Position, int> Map;
         private Bounds Area;
         private double Resolution;
-        
+
+        /// <summary>
+        /// The MetersInLatDegree constant represents the numberr of meters in a single Latitude degree
+        /// </summary>
         public const int MetresInLatDegree = 110575;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Heatmap"/> class 
+        /// </summary>
+        /// <param name="area">The bounding box that the new <see cref="Heatmap"/> instance covers</param>
+        /// <param name="numberLonPoints">The number of points along the Longitude axis in the new <see cref="Heatmap"/> instance</param>
         public Heatmap(Bounds area, int numberLonPoints)
         {
             Area = area;
@@ -36,6 +46,9 @@ namespace DroneSafetyApi.Services
             }
         }
 
+        /// <summary>
+        /// <see cref="IHeatmap.GetHeatmapPoints()"/> 
+        /// </summary>
         public IEnumerable<HeatmapPoint> GetHeatmapPoints()
         {
             List<HeatmapPoint> list = new List<HeatmapPoint>();
@@ -67,12 +80,18 @@ namespace DroneSafetyApi.Services
             return new Position(dx * Resolution, dy * Resolution);
         }
 
+        /// <summary>
+        /// <see cref="IHeatmap.ProcessPoint(Point, int)"/> 
+        /// </summary>
         public void ProcessPoint(Point point, int value)
         {
             Position pos = GetNearestPosition(point.Position);
             AddHazard(pos.Longitude, pos.Latitude, value);
         }
 
+        /// <summary>
+        /// <see cref="IHeatmap.ProcessCircle(Point, int, int)"/> 
+        /// </summary>
         public void ProcessCircle(Point circleCentre, int radius, int value)
         {
             double radiusDeg = MetresToDegrees(radius);
@@ -98,6 +117,9 @@ namespace DroneSafetyApi.Services
             return metres / MetresInLatDegree;
         }
 
+        /// <summary>
+        /// <see cref="IHeatmap.ProcessPolygon(Polygon, int)"/> 
+        /// </summary>
         public void ProcessPolygon(Polygon polygon, int value)
         {
             IList<Position> coord = polygon.Rings[0].Positions;
