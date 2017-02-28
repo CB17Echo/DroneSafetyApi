@@ -13,7 +13,18 @@ namespace DroneSafetyApi.Models
         public double CornerTwoLat { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "The number of longitude points must be a positive integer")]
         public int NumberLonPoints { get; set; }
-        public DateTime Time { get; set; }
+        private long unixTime;
+        public long UnixTime
+        {
+            get { return unixTime; }
+            set
+            {
+                unixTime = value;
+                Time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                Time = Time.AddSeconds(unixTime);
+            }
+        }
+        public DateTime Time { get; private set; }
 
         private Position CornerOne
         {
