@@ -10,11 +10,17 @@ namespace DroneSafetyApi.Data
     /// </summary>
     public class DbOptions
     {
-
+        /// <summary>
+        /// The EndpointUri property represents the the endpoint URI of the DocumentDB database
+        /// </summary>
         public string EndpointUri { get; set; }
-
+        /// <summary>
+        /// The Key property represents the the key of the DocumentDB database
+        /// </summary>
         public string Key { get; set; }
-
+        /// <summary>
+        /// The DbName property represents the the name of the DocumentDB database
+        /// </summary>
         public string DbName { get; set; }
     }
 }
