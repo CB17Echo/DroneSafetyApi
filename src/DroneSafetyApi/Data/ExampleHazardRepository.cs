@@ -9,7 +9,7 @@ namespace DroneSafetyApi.Data
 {
     public class ExampleHazardRepository : IHazardRepository
     {
-        public IEnumerable<Hazard> GetHazardsInRadius(Point point, int radius, DateTime time)
+        public IEnumerable<Hazard> GetHazardsInRadius(Point location, int radius, DateTime time)
         {
             return new Hazard[]
             {

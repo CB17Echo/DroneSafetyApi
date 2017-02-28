@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Data
 {
+    /// <summary>
+    /// The HazardDatabase class is a data service for querying a collection of hazards from a database
+    /// </summary>
     public class HazardDatabase : IHazardRepository
     {
         private static string CollectionName = "hazards";
@@ -18,6 +21,10 @@ namespace DroneSafetyApi.Data
         private Database database;
         private DocumentCollection collection;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="HazardDatabase"/> class
+        /// </summary>
+        /// <param name="config"> The configurations of the database query</param>
         public HazardDatabase(IOptions<DbOptions> config)
         {
             var dbConfig = config.Value;
@@ -26,6 +33,9 @@ namespace DroneSafetyApi.Data
             collection = client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, new DocumentCollection { Id = CollectionName }).Result;
         }
 
+        /// <summary>
+        /// <see cref="IHazardRepository.GetHazardsInRadius(Point, int, DateTime)"/> 
+        /// </summary>
         public IEnumerable<Hazard> GetHazardsInRadius(Point location, int radius, DateTime time)
         {
             IEnumerable<Hazard> circleHazards = GetCircularHazardsInRadius(location, radius, time);
