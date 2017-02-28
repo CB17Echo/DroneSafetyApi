@@ -10,7 +10,8 @@
       "target": "project"
     },
     "dotnet-test-xunit": "1.0.0-rc2-192208-24",
-    "Moq": "4.7.0"
+    "Moq": "4.7.0",
+    "Microsoft.CodeCoverage": "1.0.2"
   },
   "testRunner": "xunit",
   "frameworks": {
