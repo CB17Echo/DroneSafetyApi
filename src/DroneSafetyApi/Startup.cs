@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using DroneSafetyApi.Services;
 using DroneSafetyApi.Data;
+using Microsoft.Extensions.PlatformAbstractions;
+using System.IO;
 
 namespace DroneSafetyApi
 {
@@ -56,6 +58,18 @@ namespace DroneSafetyApi
             services.AddSingleton<IHazardRepository, ExampleHazardRepository>();
             services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
             services.AddSingleton<IHeatmapFactory, HeatmapFactory>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info {
+                    Title = "Drone Safety Web API",
+                    Version = "v1",
+                    Description = "A Web API to serve hazards from the database to the front-end in the form of a heatmap"
+                });
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var xmlPath = Path.Combine(basePath, "DroneSafetyApi.xml");
+                c.IncludeXmlComments(xmlPath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -71,6 +85,12 @@ namespace DroneSafetyApi
             app.UseCors("CorsPolicy");
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Drone Safety Web API V1");
+            });
         }
     }
 }
