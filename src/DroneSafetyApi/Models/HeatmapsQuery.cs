@@ -32,10 +32,24 @@ namespace DroneSafetyApi.Models
         /// </summary>
         [Range(1, int.MaxValue, ErrorMessage = "The number of longitude points must be a positive integer")]
         public int NumberLonPoints { get; set; }
+        private long unixTime;
         /// <summary>
-        /// The Time property represents the time of when the <see cref="Hazard"/>s  should be active
+        /// The UnixTime property represents the time as a Unix Time of when the <see cref="Hazard"/>s  should be active
         /// </summary>
-        public DateTime Time { get; set; }
+        public long UnixTime
+        {
+            get { return unixTime; }
+            set
+            {
+                unixTime = value;
+                Time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                Time = Time.AddSeconds(unixTime);
+            }
+        }
+        /// <summary>
+        /// The Time property represents the time as a <see cref="DateTime"/> of when the <see cref="Hazard"/>s  should be active
+        /// </summary>
+        public DateTime Time { get; private set; }
 
         private Position CornerOne
         {
