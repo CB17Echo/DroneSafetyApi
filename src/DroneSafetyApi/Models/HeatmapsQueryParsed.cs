@@ -16,7 +16,10 @@ namespace DroneSafetyApi.Models
         private Position CornerOne;
         private Position CornerTwo;
 
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="HeatmapsQueryParsed"/> class
+        /// </summary>
+        /// <param name="heatmapsQuery">The querey parameters supplied by a HTTP request</param>
         public HeatmapsQueryParsed(HeatmapsQuery heatmapsQuery)
         {
             CornerOne = new Position(heatmapsQuery.CornerOneLon, heatmapsQuery.CornerOneLat);
