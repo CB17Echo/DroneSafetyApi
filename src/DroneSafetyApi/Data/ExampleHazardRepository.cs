@@ -126,5 +126,10 @@ namespace DroneSafetyApi.Data
             }
             return hazardsInRadius;
         }
+
+        public IEnumerable<Hazard> GetTypeHazardsInRadius(Point centre, int radius, DateTime time, string type)
+        {
+            return null;
+        }
     }
 }

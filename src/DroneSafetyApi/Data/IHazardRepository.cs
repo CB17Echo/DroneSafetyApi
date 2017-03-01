@@ -10,5 +10,6 @@ namespace DroneSafetyApi.Data
     public interface IHazardRepository
     {
         IEnumerable<Hazard> GetHazardsInRadius(Point point, int radius, DateTime time);
+        IEnumerable<Hazard> GetTypeHazardsInRadius(Point point, int radius, DateTime time, string type);
     }
 }

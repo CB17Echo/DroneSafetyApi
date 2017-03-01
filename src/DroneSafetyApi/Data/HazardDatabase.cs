@@ -34,6 +34,19 @@ namespace DroneSafetyApi.Data
             return circleHazards.Concat(pointHazards).Concat(polygonalHazards);
         }
 
+        public IEnumerable<Hazard> GetTypeHazardsInRadius(Point location, int radius, DateTime time, string type)
+        {
+            var query = client
+                .CreateDocumentQuery<Hazard>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
+                .Where(c => c.Location.Distance(location) < radius && (c.DataType == type)
+                    && ((c.StartTime.CompareTo(time.AddHours(-0.5)) >= 0 && c.StartTime.CompareTo(time.AddHours(0.5)) <= 0)
+                    || (c.EndTime.CompareTo(time.AddHours(-0.5)) >= 0 && c.EndTime.CompareTo(time.AddHours(0.5)) <= 0)
+                    || (c.StartTime.CompareTo(time.AddHours(-0.5)) <= 0 && c.EndTime.CompareTo(time.AddHours(0.5)) >= 0)));
+            return query;
+        }
+
+
+
         private IEnumerable<Hazard> GetShapedHazardsInRadius<T>(Point location, int radius, DateTime time, string ShapeName) where T : Hazard
         {
             var query = client
