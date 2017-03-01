@@ -94,8 +94,8 @@ namespace DroneSafetyApi.Data
                             new Position(0.11, 52.22),
                             new Position(0.158, 52.213)
                         }),
-                    StartTime = new DateTime(2017,2,12,14,30,0),
-                    EndTime = new DateTime(2017,2,12,18,15,0)
+                    StartTime = new DateTime(2017,3,1,10,0,0),
+                    EndTime = new DateTime(2017,3,1,10,30,0)
                 },
                 new PointHazard
                 {
@@ -103,16 +103,16 @@ namespace DroneSafetyApi.Data
                     Shape = "Point",
                     Severity = 12,
                     Location = new Point(0.11, 52.21),
-                    StartTime = new DateTime(2017,2,12,14,30,0),
-                    EndTime = new DateTime(2017,2,12,18,15,0)
+                    StartTime = new DateTime(2017,3,1,10,0,0),
+                    EndTime = new DateTime(2017,3,1,10,30,0)
                 }, new CircularHazard
                 {
                     DataType = "Wifi",
                     Shape = "Circle",
                     Severity = 70,
                     Location = new Point(0.12, 52.213),
-                    StartTime = new DateTime(2017,2,12,14,30,0),
-                    EndTime = new DateTime(2017,2,12,18,15,0),
+                    StartTime = new DateTime(2017,3,1,10,0,0),
+                    EndTime = new DateTime(2017,3,1,10,30,0),
                     Radius = 300
                 },
             };
@@ -125,9 +125,7 @@ namespace DroneSafetyApi.Data
             List<Hazard> hazardsInRadius = new List<Hazard>();
             foreach(Hazard hazard in hazards)
             {
-                if((hazard.StartTime.CompareTo(time.AddHours(-0.5)) >= 0 && hazard.StartTime.CompareTo(time.AddHours(0.5)) <= 0)
-                    || (hazard.EndTime.CompareTo(time.AddHours(-0.5)) >= 0 && hazard.EndTime.CompareTo(time.AddHours(0.5)) <= 0)
-                    || (hazard.StartTime.CompareTo(time.AddHours(-0.5)) <= 0 && hazard.EndTime.CompareTo(time.AddHours(0.5)) >= 0))
+                if(hazard.StartTime <= time && hazard.EndTime >= time)
                 {
                     hazardsInRadius.Add(hazard);
                 }

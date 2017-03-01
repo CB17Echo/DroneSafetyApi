@@ -1,7 +1,5 @@
 ﻿{
-  "DocumentDB": {
     "EndpointUri": "<DocDBUri>",
     "Key": "<PrimaryKeyHere>",
     "DbName": "<DBNameHere>"
-  }
 }

@@ -88,7 +88,7 @@ namespace DroneSafetyApi.UnitTests.ModelsTests
         {
             double deltaLongitude = pointOne.Longitude - pointTwo.Longitude;
             double deltaLatitude = pointOne.Latitude - pointTwo.Latitude;
-            return ((int)Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude)) * Heatmap.MetresInLatDegree;
+            return (int)(Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude) * Heatmap.MetresInLatDegree);
         }
 
         public static object[] CornersExamples

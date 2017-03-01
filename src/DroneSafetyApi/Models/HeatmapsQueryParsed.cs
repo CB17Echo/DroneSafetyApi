@@ -65,7 +65,7 @@ namespace DroneSafetyApi.Models
             {
                 double deltaLongitude = (CornerOne.Longitude - CornerTwo.Longitude) / 2;
                 double deltaLatitude = (CornerOne.Latitude - CornerTwo.Latitude) / 2;
-                return ((int)Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude)) * Heatmap.MetresInLatDegree;
+                return (int)(Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude) * Heatmap.MetresInLatDegree);
             }
         }
     }
