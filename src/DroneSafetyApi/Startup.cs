@@ -21,8 +21,8 @@ namespace DroneSafetyApi
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-                //.AddJsonFile("dbsettings.example.json");
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("dbsettings.json", optional: true);
 
             if (env.IsEnvironment("Development"))
             {
@@ -53,9 +53,8 @@ namespace DroneSafetyApi
 
             services.AddMvc();
 
-            //services.Configure<DbOptions>(Configuration.GetSection("DocumentDB"));
-            //services.AddSingleton<IHazardRepository, HazardDatabase>();
-            services.AddSingleton<IHazardRepository, ExampleHazardRepository>();
+            services.Configure<DbOptions>(Configuration.GetSection("DocumentDB"));
+            services.AddSingleton<IHazardRepository, HazardDatabase>();
             services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
             services.AddSingleton<IHeatmapFactory, HeatmapFactory>();
 
