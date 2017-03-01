@@ -54,7 +54,14 @@ namespace DroneSafetyApi
             services.AddMvc();
 
             services.Configure<DbOptions>(Configuration);
-            services.AddSingleton<IHazardRepository, HazardDatabase>();
+            if (Configuration.GetValue<string>("EndpointUri") == null)
+            {
+                services.AddSingleton<IHazardRepository, ExampleHazardRepository>();
+            }
+            else
+            {
+                services.AddSingleton<IHazardRepository, HazardDatabase>();
+            }
             services.AddSingleton<IHazardsToHeatmapsResponse, HazardsToHeatmapResponse>();
             services.AddSingleton<IHeatmapFactory, HeatmapFactory>();
 
