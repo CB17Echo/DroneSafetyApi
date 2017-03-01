@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 
 namespace DroneSafetyApi.Models
 {
+    /// <summary>
+    /// A class to encapsulate the query parameters sent to the database
+    /// </summary>
     public class HeatmapsQueryParsed
     {
         private Position CornerOne;
         private Position CornerTwo;
+
 
         public HeatmapsQueryParsed(HeatmapsQuery heatmapsQuery)
         {
@@ -21,10 +25,17 @@ namespace DroneSafetyApi.Models
             Time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             Time = Time.AddSeconds(heatmapsQuery.UnixTime);
         }
-
+        /// <summary>
+        /// Dimension of heatmap grid. Should be a positive integer.
+        /// </summary>
         public int NumberLonPoints { get; set; }
+        /// <summary>
+        /// Date and time of desired hazards
+        /// </summary>
         public DateTime Time { get; set; }
-
+        /// <summary>
+        /// Bounding box of the query
+        /// </summary>
         public Bounds Area
         {
             get
@@ -32,7 +43,9 @@ namespace DroneSafetyApi.Models
                 return new Bounds(CornerOne, CornerTwo);
             }
         }
-
+        /// <summary>
+        /// Centre location of the bounding box
+        /// </summary>
         public Point Centre
         {
             get
@@ -43,7 +56,9 @@ namespace DroneSafetyApi.Models
                     );
             }
         }
-
+        /// <summary>
+        /// Radius required to capture all hazards inside the bounding box from centre
+        /// </summary>
         public int Radius
         {
             get
