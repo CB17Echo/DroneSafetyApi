@@ -117,9 +117,7 @@ namespace DroneSafetyApi.Data
             List<Hazard> hazardsInRadius = new List<Hazard>();
             foreach(Hazard hazard in hazards)
             {
-                if((hazard.StartTime.CompareTo(time.AddHours(-0.5)) >= 0 && hazard.StartTime.CompareTo(time.AddHours(0.5)) <= 0)
-                    || (hazard.EndTime.CompareTo(time.AddHours(-0.5)) >= 0 && hazard.EndTime.CompareTo(time.AddHours(0.5)) <= 0)
-                    || (hazard.StartTime.CompareTo(time.AddHours(-0.5)) <= 0 && hazard.EndTime.CompareTo(time.AddHours(0.5)) >= 0))
+                if(hazard.StartTime <= time && hazard.EndTime >= time)
                 {
                     hazardsInRadius.Add(hazard);
                 }
