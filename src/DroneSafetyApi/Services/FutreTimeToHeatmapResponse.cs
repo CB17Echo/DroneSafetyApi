@@ -18,6 +18,7 @@ namespace DroneSafetyApi.Services
             HeatmapsResponse response = hazardsToHeatmaps.ConvertToHeatmapResponse(query.Area, query.NumberLonPoints, hazard);
 
             DateTime current = DateTime.Now;
+            TimeSpan difference = query.Time - current;
 
             HeatmapsResponse[] responses = new HeatmapsResponse[ComparisonNumber];
 
@@ -53,7 +54,7 @@ namespace DroneSafetyApi.Services
                         }
                     }
 
-                    var intersectionHazards = hazards.GetTypeHazardsInRadius(query.Centre, query.Radius, current.AddDays(-7 * minId), datatype /*add time difference*/ );
+                    var intersectionHazards = hazards.GetTypeHazardsInRadius(query.Centre, query.Radius, current.AddDays(-7 * minId) + difference, datatype);
                     var bestResponse = hazardsToHeatmaps.ConvertToHeatmapResponse(query.Area, query.NumberLonPoints, intersectionHazards);
 
                     response.Heatmaps.Concat(bestResponse.Heatmaps);
