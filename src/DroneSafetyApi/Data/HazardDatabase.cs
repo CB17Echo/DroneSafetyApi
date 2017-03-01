@@ -37,7 +37,7 @@ namespace DroneSafetyApi.Data
         private IEnumerable<Hazard> GetShapedHazardsInRadius<T>(Point location, int radius, DateTime time, string ShapeName) where T : Hazard
         {
             var query = client
-                .CreateDocumentQuery<Hazard>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
+                .CreateDocumentQuery<T>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
                 .Where(c => c.Location.Distance(location) < radius && c.Shape == ShapeName
                     && ((c.StartTime >= time.AddHours(-0.5) && c.StartTime <= time.AddHours(0.5))
                     || (c.EndTime >= time.AddHours(-0.5) && c.EndTime <= time.AddHours(0.5))
