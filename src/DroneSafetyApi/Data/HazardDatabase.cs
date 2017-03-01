@@ -39,9 +39,7 @@ namespace DroneSafetyApi.Data
             var query = client
                 .CreateDocumentQuery<T>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
                 .Where(c => c.Location.Distance(location) < radius && c.Shape == ShapeName
-                    && ((c.StartTime >= time.AddHours(-0.5) && c.StartTime <= time.AddHours(0.5))
-                    || (c.EndTime >= time.AddHours(-0.5) && c.EndTime <= time.AddHours(0.5))
-                    || (c.StartTime <= time.AddHours(-0.5) && c.EndTime >= time.AddHours(0.5))));
+                    && c.StartTime <= time && c.EndTime >= time);
             return query;
         }
 
