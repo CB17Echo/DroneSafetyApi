@@ -3,12 +3,13 @@
 namespace DroneSafetyApi.Models
 {
     /// <summary>
-    /// The HeatmapResponse class is a model to hold information that is being sent to the web application
+    /// The HeatmapResponse class is a model to hold information served over the api
     /// </summary>
     public class HeatmapsResponse
     {
         /// <summary>
-        /// The NumSources property represents the number of different data sources processed
+        /// <para>The NumSources property represents the number of different data sources processed</para>
+        /// <para>Numsources = Sources.Count = Heatmaps.Count</para>
         /// </summary>
         public int NumSources { get; set; }
         /// <summary>
@@ -16,7 +17,8 @@ namespace DroneSafetyApi.Models
         /// </summary>
         public IEnumerable<string> Sources { get; set; }
         /// <summary>
-        /// The Heatmaps property represents a mapping from a data source to the <see cref="HeatmapPoint"/>s that display it
+        /// <para>The Heatmaps property represents a mapping from a data source to the <see cref="HeatmapPoint"/>s that display it</para>
+        /// <para>The string keys of Heatmaps correspond exactly to the elements in sources</para>
         /// </summary>
         public Dictionary<string, IEnumerable<HeatmapPoint>> Heatmaps { get; set; }
     }

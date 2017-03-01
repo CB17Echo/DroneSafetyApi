@@ -18,7 +18,7 @@ namespace DroneSafetyApi.Controllers
     public class HeatmapsController : Controller
     {
         /// <summary>
-        /// The Hazards property is used to query for a collection of <see cref="Hazard"/>s
+        /// The Hazards property is used to query the database for a collection of <see cref="Hazard"/>s
         /// </summary>
         public IHazardRepository Hazards { get; set; }
         /// <summary>
@@ -32,7 +32,7 @@ namespace DroneSafetyApi.Controllers
         /// <param name="hazards"> The <see cref="IHazardRepository"/> used to query for <see cref="Hazards"/> in the new
         /// <see cref="HeatmapsController"/> instance </param>
         /// <param name="hazardsToHeatmaps"> The <see cref="IHazardsToHeatmapsResponse"/> used to generate <see cref="HeatmapsResponse"/>s
-        /// in the new <see cref="HeatmapsController"/> instanc</param>
+        /// in the new <see cref="HeatmapsController"/> instance</param>
         public HeatmapsController(
             IHazardRepository hazards,
             IHazardsToHeatmapsResponse hazardsToHeatmaps)
@@ -42,7 +42,7 @@ namespace DroneSafetyApi.Controllers
         }
 
         /// <summary>
-        /// The GetHeatmaps method generates a <see cref="HeatmapsResponse"/> from a <see cref="HeatmapsQuery"/> 
+        /// The GetHeatmaps method generates a <see cref="HeatmapsResponse"/> from a <see cref="HeatmapsQuery"/> and serves it back as an HTTP response
         /// </summary>
         /// <param name="query"> The <see cref="HeatmapsQuery"/> used to create the <see cref="HeatmapsResponse"/> </param>
         /// <returns>A <see cref="HeatmapsResponse"/> containing the information received from the query</returns>

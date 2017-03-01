@@ -23,7 +23,7 @@ namespace DroneSafetyApi.Models
         /// Creates a new instance of the <see cref="Bounds"/> class 
         /// </summary>
         /// <param name="cornerOne">The first corner of the bounding box</param>
-        /// /// <param name="cornerTwo">The second corner of the bounding box</param>
+        /// <param name="cornerTwo">The second corner of the bounding box</param>
         public Bounds(Position cornerOne, Position cornerTwo)
         {
             Max = new Position(

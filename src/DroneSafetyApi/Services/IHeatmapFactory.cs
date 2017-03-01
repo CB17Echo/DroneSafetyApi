@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DroneSafetyApi.Services
 {
     /// <summary>
-    /// The IHeatmapFactory interface is capable of generating new <see cref="IHeatmap"/>s
+    /// The IHeatmapFactory interface is capable of generating new <see cref="IHeatmap"/>s. It Is the Factory design pattern for <see cref="IHeatmap"/> instances
     /// </summary>
     public interface IHeatmapFactory
     {

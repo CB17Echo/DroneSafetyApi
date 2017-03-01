@@ -10,7 +10,7 @@
         /// </summary>
         public double X { get; set; }
         /// <summary>
-        /// The XY property represents the Latitude coordinate of the heatmap point
+        /// The Y property represents the Latitude coordinate of the heatmap point
         /// </summary>
         public double Y { get; set; }
         /// <summary>

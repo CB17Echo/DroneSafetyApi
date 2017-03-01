@@ -7,8 +7,14 @@ using Microsoft.Azure.Documents.Spatial;
 
 namespace DroneSafetyApi.Data
 {
+    /// <summary>
+    /// The ExampleHazardRepository class is a sample data model to provide fake hazards to the API rather than query a database
+    /// </summary>
     public class ExampleHazardRepository : IHazardRepository
     {
+        /// <summary>
+        /// <see cref="IHazardRepository.GetHazardsInRadius(Point, int, DateTime)"/>
+        /// </summary>
         public IEnumerable<Hazard> GetHazardsInRadius(Point location, int radius, DateTime time)
         {
             return new Hazard[]

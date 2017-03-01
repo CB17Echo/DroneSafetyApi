@@ -5,8 +5,9 @@ using Microsoft.Azure.Documents.Spatial;
 namespace DroneSafetyApi.Services
 {
     /// <summary>
-    /// The HazardsToHeatmapsResponseNoCompositionSendAllSources class is a service to generate <see cref="HeatmapsResponse"/>s
-    /// from a collection of <see cref="Hazard"/>s 
+    /// <para>The HazardsToHeatmapsResponseNoCompositionSendAllSources class is a service to generate <see cref="HeatmapsResponse"/>s
+    /// from a collection of <see cref="Hazard"/>s </para>
+    /// <para>This class creates a heatmap for each different data source but does not combine the heatmaps</para>
     /// </summary>
     public abstract class HazardsToHeatmapsResponseNoCompositionSendAllSources : IHazardsToHeatmapsResponse
     {
