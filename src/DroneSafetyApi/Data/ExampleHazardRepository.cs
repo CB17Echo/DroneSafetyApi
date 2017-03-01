@@ -13,11 +13,9 @@ namespace DroneSafetyApi.Data
     public class ExampleHazardRepository : IHazardRepository
     {
         /// <summary>
-        /// <see cref="IHazardRepository.GetHazardsInRadius(Point, int, DateTime)"/>
+        /// Fake hazard data
         /// </summary>
-        public IEnumerable<Hazard> GetHazardsInRadius(Point location, int radius, DateTime time)
-        {
-            return new Hazard[]
+        private Hazard[] hazards = new Hazard[]
             {
                 new PolygonalHazard
                 {
@@ -33,8 +31,8 @@ namespace DroneSafetyApi.Data
                             new Position(0.11, 52.213),
                             new Position(0.11, 52.203)
                         }),
-                    StartTime = time,
-                    EndTime = time
+                    StartTime = new DateTime(2017,2,1,23,45,0),
+                    EndTime = new DateTime(2017,2,2,00,15,0)
                 },
                 new PolygonalHazard
                 {
@@ -52,8 +50,8 @@ namespace DroneSafetyApi.Data
                             new Position(0.071, 52.182),
                             new Position(0.081, 52.193)
                         }),
-                    StartTime = time,
-                    EndTime = time
+                    StartTime = new DateTime(2017,2,1,23,45,0),
+                    EndTime = new DateTime(2017,2,2,00,15,0)
                 },
                 new PointHazard
                 {
@@ -61,16 +59,16 @@ namespace DroneSafetyApi.Data
                     Shape = "Point",
                     Severity = 8,
                     Location = new Point(0.09, 52.21),
-                    StartTime = time,
-                    EndTime = time
+                    StartTime = new DateTime(2017,2,1,23,45,0),
+                    EndTime = new DateTime(2017,2,2,00,15,0)
                 }, new CircularHazard
                 {
                     DataType = "Wifi",
                     Shape = "Circle",
                     Severity = 25,
                     Location = new Point(0.09, 52.21),
-                    StartTime = time,
-                    EndTime = time,
+                    StartTime = new DateTime(2017,2,1,23,45,0),
+                    EndTime = new DateTime(2017,2,2,00,15,0),
                     Radius = 212
                 },
                 new CircularHazard
@@ -79,11 +77,62 @@ namespace DroneSafetyApi.Data
                     Shape = "Circle",
                     Severity = 15,
                     Location = new Point(0.12, 52.203),
-                    StartTime = time,
-                    EndTime = time,
+                    StartTime = new DateTime(2017,2,1,23,45,0),
+                    EndTime = new DateTime(2017,2,2,00,15,0),
                     Radius = 600
-                }
+                },
+                new PolygonalHazard
+                {
+                    DataType = "Bus",
+                    Shape = "Polygon",
+                    Severity = 50,
+                    Location = new Polygon(
+                        new[]
+                        {
+                            new Position(0.158, 52.213),
+                            new Position(0.14, 52.207),
+                            new Position(0.11, 52.22),
+                            new Position(0.158, 52.213)
+                        }),
+                    StartTime = new DateTime(2017,2,12,14,30,0),
+                    EndTime = new DateTime(2017,2,12,18,15,0)
+                },
+                new PointHazard
+                {
+                    DataType = "Wifi",
+                    Shape = "Point",
+                    Severity = 12,
+                    Location = new Point(0.11, 52.21),
+                    StartTime = new DateTime(2017,2,12,14,30,0),
+                    EndTime = new DateTime(2017,2,12,18,15,0)
+                }, new CircularHazard
+                {
+                    DataType = "Wifi",
+                    Shape = "Circle",
+                    Severity = 70,
+                    Location = new Point(0.12, 52.213),
+                    StartTime = new DateTime(2017,2,12,14,30,0),
+                    EndTime = new DateTime(2017,2,12,18,15,0),
+                    Radius = 300
+                },
             };
+
+        /// <summary>
+        /// <see cref="IHazardRepository.GetHazardsInRadius(Point, int, DateTime)"/>
+        /// </summary>
+        public IEnumerable<Hazard> GetHazardsInRadius(Point point, int radius, DateTime time)
+        {
+            List<Hazard> hazardsInRadius = new List<Hazard>();
+            foreach(Hazard hazard in hazards)
+            {
+                if((hazard.StartTime.CompareTo(time.AddHours(-0.5)) >= 0 && hazard.StartTime.CompareTo(time.AddHours(0.5)) <= 0)
+                    || (hazard.EndTime.CompareTo(time.AddHours(-0.5)) >= 0 && hazard.EndTime.CompareTo(time.AddHours(0.5)) <= 0)
+                    || (hazard.StartTime.CompareTo(time.AddHours(-0.5)) <= 0 && hazard.EndTime.CompareTo(time.AddHours(0.5)) >= 0))
+                {
+                    hazardsInRadius.Add(hazard);
+                }
+            }
+            return hazardsInRadius;
         }
     }
 }
