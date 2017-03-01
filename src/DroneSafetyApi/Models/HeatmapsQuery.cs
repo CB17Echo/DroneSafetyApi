@@ -5,70 +5,42 @@ using DroneSafetyApi.Services;
 
 namespace DroneSafetyApi.Models
 {
+    /// <summary>
+    /// A class to encapsulate the query parameters supplied by the HTTP request
+    /// </summary>
     public class HeatmapsQuery
     {
+        /// <summary>
+        /// Longitude of the first corner
+        /// </summary>
+        [Required]
         public double CornerOneLon { get; set; }
+        /// <summary>
+        /// Latitude of the first corner
+        /// </summary>
+        [Required]
         public double CornerOneLat { get; set; }
+        /// <summary>
+        /// Longitude of the second corner
+        /// </summary>
+        [Required]
         public double CornerTwoLon { get; set; }
+        /// <summary>
+        /// Latitude of the second corner
+        /// </summary>
+        [Required]
         public double CornerTwoLat { get; set; }
+        /// <summary>
+        /// Dimension of heatmap grid. Should be a positive integer.
+        /// </summary>
+        [Required]
         [Range(1, int.MaxValue, ErrorMessage = "The number of longitude points must be a positive integer")]
         public int NumberLonPoints { get; set; }
-        private long unixTime;
-        public long UnixTime
-        {
-            get { return unixTime; }
-            set
-            {
-                unixTime = value;
-                Time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-                Time = Time.AddSeconds(unixTime);
-            }
-        }
-        public DateTime Time { get; private set; }
-
-        private Position CornerOne
-        {
-            get
-            {
-                return new Position(CornerOneLon, CornerOneLat);
-            }
-        }
-
-        private Position CornerTwo
-        {
-            get
-            {
-                return new Position(CornerTwoLon, CornerTwoLat);
-            }
-        }
-
-        public Bounds Area
-        {
-            get
-            {
-                return new Bounds(CornerOne, CornerTwo);
-            }
-        }
-
-        public Point Centre
-        {
-            get
-            {
-                return new Point(
-                    Area.Min.Longitude + (Area.Max.Longitude - Area.Min.Longitude) / 2,
-                    Area.Min.Latitude + (Area.Max.Latitude - Area.Min.Latitude) / 2
-                    );
-            }
-        }
-
-        public int Radius
-        {
-            get
-            {
-                double deltaLongitude = (CornerOne.Longitude - CornerTwo.Longitude)/2;
-                double deltaLatitude = (CornerOne.Latitude - CornerTwo.Latitude)/2;
-                return ((int) Math.Sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude)) * Heatmap.MetresInLatDegree;
-            }
-        }
+        /// <summary>
+        /// Unix timestamp. Should be a nonnegative long.
+        /// </summary>
+        [Required]
+        [Range(0, long.MaxValue, ErrorMessage = "The time must be nonnegative")]
+        public long UnixTime { get; set; }
     }
 }

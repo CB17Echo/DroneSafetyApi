@@ -23,16 +23,25 @@ namespace DroneSafetyApi.Controllers
             HazardsToHeatmaps = hazardsToHeatmaps;
         }
 
+        /// <summary>
+        /// Serves back a set of heatmaps, corresponding to the given query parameters
+        /// </summary>
+        /// <returns>A Heatmaps Response (see example) with the relevant heatmaps populated. </returns>
+        /// <response code="200">Returns the required heatmaps.</response>
+        /// <response code="400">If the query string is invalid.</response>
         [HttpGet]
+        [ProducesResponseType(typeof(HeatmapsResponse), 200)]
+        [ProducesResponseType(typeof(HeatmapsResponse), 400)]
         public IActionResult GetHeatmaps([FromQuery]HeatmapsQuery query)
         {
             if (!ModelState.IsValid)
             {
                 return new BadRequestResult();
             }
-            var intersectionHazards = Hazards.GetHazardsInRadius(query.Centre, query.Radius, query.Time);
+            var heatmapsQueryParsed = new HeatmapsQueryParsed(query);
+            var intersectionHazards = Hazards.GetHazardsInRadius(heatmapsQueryParsed.Centre, heatmapsQueryParsed.Radius, heatmapsQueryParsed.Time);
             var heatmapsResponse = HazardsToHeatmaps.ConvertToHeatmapResponse(
-                query.Area,
+                heatmapsQueryParsed.Area,
                 query.NumberLonPoints,
                 intersectionHazards
                 );
