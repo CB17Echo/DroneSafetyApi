@@ -20,7 +20,8 @@ namespace DroneSafetyApi.UnitTests.ControllersTests
             // Arrange
             var mockHazardRespository = new Mock<IHazardRepository>();
             var mockHazardsToHeatmapsResponse = new Mock<IHazardsToHeatmapsResponse>();
-            var controller = new HeatmapsController(mockHazardRespository.Object, mockHazardsToHeatmapsResponse.Object);
+            var mockFutureTimeToHeatsmapsResponse = new Mock<IFutureTimeToHeatmapResponse>();
+            var controller = new HeatmapsController(mockHazardRespository.Object, mockHazardsToHeatmapsResponse.Object, mockFutureTimeToHeatsmapsResponse.Object);
             controller.ModelState.AddModelError("NumberLonPoints", "NumberLonPoints must be a positive Integer");
             var heatmapsQuery = new HeatmapsQuery();
 
@@ -41,7 +42,8 @@ namespace DroneSafetyApi.UnitTests.ControllersTests
                 .Returns(new List<Hazard>())
                 .Verifiable();
             var mockHazardsToHeatmapsResponse = new Mock<IHazardsToHeatmapsResponse>();
-            var controller = new HeatmapsController(mockHazardRepository.Object, mockHazardsToHeatmapsResponse.Object);
+            var mockFutureTimeToHeatmapsResponse = new Mock<IFutureTimeToHeatmapResponse>();
+            var controller = new HeatmapsController(mockHazardRepository.Object, mockHazardsToHeatmapsResponse.Object, mockFutureTimeToHeatmapsResponse.Object);
             var heatmapsQuery = new HeatmapsQuery();
 
             // Act
@@ -65,7 +67,8 @@ namespace DroneSafetyApi.UnitTests.ControllersTests
                      It.IsAny<IEnumerable<Hazard>>()))
                  .Returns(exampleHeatmapsResponse)
                  .Verifiable();
-            var controller = new HeatmapsController(mockHazardRepository.Object, mockHazardsToHeatmapsResponse.Object);
+            var mockFutureTimeToHeatmapsResponse = new Mock<IFutureTimeToHeatmapResponse>();
+            var controller = new HeatmapsController(mockHazardRepository.Object, mockHazardsToHeatmapsResponse.Object, mockFutureTimeToHeatmapsResponse.Object);
             var heatmapsQuery = new HeatmapsQuery();
 
             // Act
