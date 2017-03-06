@@ -14,3 +14,5 @@ src\DroneSafetyApi\bin\Debug\netcoreapp1.0\DroneSafetyApi.xml
 for an XML file of the documentation.
 
 test/ contains unit tests for the project.
+
+The future prediction feature is found in the "FuturePrediction" branch.
