@@ -34,6 +34,8 @@ namespace DroneSafetyApi.Services
                         break;
                     case "Circle":
                         CircularHazard circle = (CircularHazard)hazard;
+                        if (circle.DataType == "Bus")
+                            circle.Severity *= 10;
                         heatmap.ProcessCircle(circle.Location, circle.Radius, hazard.Severity);
                         break;
                     case "Polygon":
