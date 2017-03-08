@@ -65,7 +65,11 @@ namespace DroneSafetyApi.Data
 
         private IEnumerable<Hazard> GetPolygonalHazardsInRadius(Point location, int radius, DateTime time)
         {
-            return GetShapedHazardsInRadius<PolygonalHazard>(location, radius, time, "Polygon");
+            var query = client
+                .CreateDocumentQuery<PolygonalHazard>(collection.SelfLink, new FeedOptions { EnableScanInQuery = true })
+                .Where(c => c.Shape == "Polygon"
+                    && c.StartTime <= time && c.EndTime >= time);
+            return query;
         }
     }
 }
