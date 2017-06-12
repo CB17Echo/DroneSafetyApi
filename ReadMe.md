@@ -1,9 +1,7 @@
 This is the project for the Drone Safety API, which serves heatmaps data to the front-end.
 It is written using the ASP.NET core framework.
 
-The API is now public at teamechowebapi.azurewebsites.net.
-
-The documentation for the API is available at teamechowebapi.azurewebsites.net/swagger.
+The documentation for the API is available as a swagger page.
 That page describes the API endpoints and the possible query parameters for those endpoints.
 
 src/ contains the source code for the project.
